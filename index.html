@@ -6,18 +6,15 @@
 <title>Herramientas · Lucciano's</title>
 <meta name="description" content="Portal de herramientas internas de Administración y Finanzas de Lucciano's">
 <meta name="theme-color" content="#f6f5f2">
+<meta name="color-scheme" content="light">
 <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAC50lEQVR4Xu2US0wTQRjHZ3bZtkupLS2PskChcaG8n6GVYBANmhhDYrwZY7xyNCbGmwcjGk2M8SQYYowX0CDxIGoIiRoBUSQ8xEcKKiKklLIt25Z2u9vumGWbYqumF7n1d5pkZ//ffP/5fwP7x6+A3QTbTXGJVIGkpCxKSsqipKT9vgMhBADgOaGve9iQoy2vK6YrC5GIAAQQQmkBQHSNEIQwQZ1xsoyLZRnfJuM/fMImf42/AyQJdZ29CwCqsdHPB94gEYmiKKtDDEIMej1bg/deQAg31jbdLu/SguNJ3+jshP3D5OJQ/+iPBcfyV+ezh2Ox2jsdRCIijmMvh6Z+fnNe6um8fXmg/bgVYhDHcC7Iq0jF6tI669kiFNIv4yNzc28XNLp0t8vr2fDNv18M+LmDHU0AoRpbyfT4l1gBGHtN5TOeO3mz7VhjZpYmGAiV15lDnOByeFwOj0JJAADIdOXo8IxWn4HjmMCHAQB7MjMAAMYCPR8KixGxqokGCOWZstQaUq4R7UAQwjiO2eeWMQzuP1I7M2EniLSx4Vm3izXReU2tFRc7e85fOy3wAobBfYeqGCebQ+k1OrXZQvGcsLq0PjNhz83X7y3Lh1jc3ex0AADovf642koX0Xl3rg7SlSbXmqeINqo1ZGNL2doK4/MGiksoPiQEt0KeDS/jZNcdbueKmwvyhlztgaMN1VZaigmKBiGug+6uR1yQ32R8e3RqPxvoONWqJBViRPSxgfnJxXevPrJuv58NBPwcjmOkWqUzZGRT+kJzTq2t1GyhdAYNAFGTQXy4ohaZLZRCSVjbKvE0XEUqpl5/Hugd+TT9HQCgIhUm2lhRby4upQrMudlGnVYv+R6X7+0EJ5gjE2eRzNMHY/dvDVGmrOb2moaWMhNtJIi4cZEPK24PDdwekT9nIjGmkYgoDQWEPB92rrov3DhT32yJbRJFWS0qJx8WT/DiH/ylg/9L6jVNSsqipKQsSsquW/QL/TU1gZ2IrI4AAAAASUVORK5CYII=">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script>
-  // Tema antes de pintar (mismo criterio que las apps: claro / oscuro / según el sistema)
-  try { var t = localStorage.getItem('portal-tema'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
-</script>
 <style>
 /* =============================================================================
    Portal de herramientas — Lucciano's
-   Mismo sistema de diseño que las apps (tokens claro / oscuro).
+   Mismo sistema de diseño que las apps (siempre en modo claro).
    ============================================================================= */
 :root {
   --paper: #f6f5f2; --surface: #ffffff; --surface-2: #f0efeb;
@@ -30,22 +27,6 @@
   --sh-1: 0 1px 2px rgba(21,20,15,.05), 0 2px 8px rgba(21,20,15,.05);
   --sh-2: 0 18px 40px rgba(21,20,15,.12), 0 2px 6px rgba(21,20,15,.06);
   --logo-filter: none; --tile-ring: rgba(21,20,15,.06);
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --paper: #111213; --surface: #18191b; --surface-2: #202124;
-    --line: #2a2b2f; --line-strong: #3a3c41; --ink: #f2f1ec; --text: #ebeae5; --muted: #9c9a92;
-    --accent: #8fc25a; --accent-soft: #223018;
-    --sh-1: 0 1px 2px rgba(0,0,0,.4); --sh-2: 0 18px 44px rgba(0,0,0,.55);
-    --logo-filter: invert(1); --tile-ring: rgba(255,255,255,.10); color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --paper: #111213; --surface: #18191b; --surface-2: #202124;
-  --line: #2a2b2f; --line-strong: #3a3c41; --ink: #f2f1ec; --text: #ebeae5; --muted: #9c9a92;
-  --accent: #8fc25a; --accent-soft: #223018;
-  --sh-1: 0 1px 2px rgba(0,0,0,.4); --sh-2: 0 18px 44px rgba(0,0,0,.55);
-  --logo-filter: invert(1); --tile-ring: rgba(255,255,255,.10); color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
@@ -68,12 +49,6 @@ svg.i { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-widt
 .icon-btn:hover { color: var(--ink); border-color: var(--line-strong); }
 .icon-btn:focus-visible, .chip:focus-visible, .card:focus-visible, .search input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .icon-btn .sun { display: none; }
-:root[data-theme="dark"] .icon-btn .sun { display: block; }
-:root[data-theme="dark"] .icon-btn .moon { display: none; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .icon-btn .sun { display: block; }
-  :root:not([data-theme="light"]) .icon-btn .moon { display: none; }
-}
 
 /* ---------- Encabezado ---------- */
 .hero { padding: 56px 0 28px; }
@@ -121,13 +96,6 @@ main { flex: 1; padding-bottom: 64px; }
 .feats { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
 .feats li { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; color: var(--text); line-height: 1.45; }
 .feats li::before { content: ""; flex: none; width: 6px; height: 6px; margin-top: 7px; border-radius: 50%; background: var(--dot, var(--c)); }
-/* Apps con color oscuro (negro): en modo oscuro se aclaran el ícono, la viñeta y la franja para que no se pierdan */
-:root[data-theme="dark"] .card.oscura { --c: #2e2f33; --dot: #b9b7b0; }
-:root[data-theme="dark"] .card.oscura::after { background: #b9b7b0; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .card.oscura { --c: #2e2f33; --dot: #b9b7b0; }
-  :root:not([data-theme="light"]) .card.oscura::after { background: #b9b7b0; }
-}
 .card-foot { margin-top: auto; padding-top: 14px; border-top: 1px dashed var(--line); display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .tags { display: flex; gap: 6px; flex-wrap: wrap; }
 .tag { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 9px; border-radius: var(--r-pill); background: var(--surface-2); font: 600 11.5px/1 var(--sans); color: var(--muted); }
@@ -168,10 +136,6 @@ footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wr
       <span class="lbl">Herramientas</span>
     </a>
     <span class="sp"></span>
-    <button class="icon-btn" id="tema" type="button" aria-label="Cambiar tema claro / oscuro" title="Cambiar tema">
-      <svg class="i moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      <svg class="i sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><path d="M12 1.5v2M12 20.5v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1.5 12h2M20.5 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
-    </button>
   </div>
 </header>
 
@@ -213,7 +177,7 @@ footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wr
 <script>
 /* =============================================================================
    CATÁLOGO — para sumar una app nueva, agregá un objeto acá y listo.
-   Si mañana las apps se mudan a luccianos.com.ar, cambiá solo BASE (o la url de cada una).
+   Cada app tiene su dirección en luccianos.com.ar (url). Las que no tienen url usan BASE + repo.
    ============================================================================= */
 const BASE = 'https://juanluccianos.github.io/';
 
@@ -243,49 +207,49 @@ const DISP = {
 
 const APPS = [
   {
-    nombre: 'Facturas de proveedores', repo: 'facturasluccianos', area: 'compras', icono: 'factura',
+    nombre: 'Facturas de proveedores', repo: 'facturasluccianos', url: 'https://facturas.luccianos.com.ar/', area: 'compras', icono: 'factura',
     color: '#A8C686', sobre: '#15140f',
     resumen: 'Recepción, validación y registración en Shares de las facturas de proveedores recibidas por correo electrónico.',
     puntos: ['Lectura automatizada de comprobantes mediante IA', 'Constatación en ARCA y bandeja de revisión', 'Propuestas de pago y circuito de aprobación'],
     usuarios: 'Administración', dispositivos: ['escritorio']
   },
   {
-    nombre: 'Gastos con tarjeta y efectivo', repo: 'facturasefectivoluccianos', area: 'compras', icono: 'tarjeta',
+    nombre: 'Gastos con tarjeta y efectivo', repo: 'facturasefectivoluccianos', url: 'https://gastos.luccianos.com.ar/', area: 'compras', icono: 'tarjeta',
     color: '#A8C686', sobre: '#15140f',
     resumen: 'Registración de los gastos abonados con tarjeta corporativa o en efectivo.',
     puntos: ['Revisión de comprobantes previa a su imputación', 'Conciliación con los resúmenes de tarjeta', 'Registración directa en Shares'],
     usuarios: 'Administración', dispositivos: ['escritorio']
   },
   {
-    nombre: 'Viáticos', repo: 'viaticosluccianos', area: 'compras', icono: 'escaner',
+    nombre: 'Viáticos', repo: 'viaticosluccianos', url: 'https://viaticos.luccianos.com.ar/', area: 'compras', icono: 'escaner',
     color: '#0a0a0a', sobre: '#ffffff',
     resumen: 'Digitalización de los comprobantes de los supervisores para su imputación como viáticos del período.',
     puntos: ['Escaneo desde dispositivos móviles con corrección de perspectiva', 'Extracción de datos mediante IA', 'Panel de cierre mensual por supervisor'],
     usuarios: 'Supervisores y Administración', dispositivos: ['celular', 'escritorio']
   },
   {
-    nombre: 'Asientos contables', repo: 'asientosluccianos', area: 'contable', icono: 'libro',
+    nombre: 'Asientos contables', repo: 'asientosluccianos', url: 'https://asientos.luccianos.com.ar/', area: 'contable', icono: 'libro',
     color: '#B39DDB', sobre: '#15140f',
     resumen: 'Registración controlada de asientos contables en Shares, en forma individual o por lotes.',
     puntos: ['Importación desde planillas de Excel', 'Validación de cuentas y balanceo previo al envío', 'Seguimiento de los lotes registrados'],
     usuarios: 'Contabilidad', dispositivos: ['escritorio']
   },
   {
-    nombre: 'Liquidaciones Payway', repo: 'payway', area: 'contable', icono: 'banco',
+    nombre: 'Liquidaciones Payway', repo: 'payway', url: 'https://payway.luccianos.com.ar/', area: 'contable', icono: 'banco',
     color: '#7AA2D6', sobre: '#15140f',
     resumen: 'Procesamiento de las liquidaciones mensuales de Payway y su registración en Shares como comprobantes.',
     puntos: ['Lectura local de los archivos PDF', 'Asignación de cada liquidación a su local', 'Control mensual de observaciones pendientes'],
     usuarios: 'Contabilidad y Tesorería', dispositivos: ['escritorio']
   },
   {
-    nombre: 'Costos de insumos', repo: 'costosluccianos', area: 'costos', icono: 'grafico',
+    nombre: 'Costos de insumos', repo: 'costosluccianos', url: 'https://costos.luccianos.com.ar/', area: 'costos', icono: 'grafico',
     color: '#7A1F2E', sobre: '#ffffff',
     resumen: 'Seguimiento de los precios de materias primas a partir de las facturas de proveedores, con tablero y alertas.',
     puntos: ['Evolución del precio por kilogramo, litro o unidad', 'Recetas de Shares y costo por producto', 'Simulador de costos y alertas de variación'],
     usuarios: 'Gerencia y Finanzas', dispositivos: ['escritorio']
   },
   {
-    nombre: 'Relevamientos', repo: 'relevamientosluccianos', area: 'gestion', icono: 'checklist',
+    nombre: 'Relevamientos', repo: 'relevamientosluccianos', url: 'https://relevamientos.luccianos.com.ar/', area: 'gestion', icono: 'checklist',
     color: '#0a0a0a', sobre: '#ffffff',
     resumen: 'Relevamiento mensual de locales mediante checklist, registro fotográfico y puntaje.',
     puntos: ['Funcionamiento sin conexión a internet', 'Puntaje automático y ranking mensual', 'Informe de gestión y exportación a Excel'],
@@ -385,22 +349,9 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && document.activeElement === $('#q')) { $('#q').value = ''; render(); $('#q').blur(); }
 });
 
-// Tema claro / oscuro
-function temaActual() {
-  const t = document.documentElement.dataset.theme;
-  if (t) return t;
-  return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}
-function pintarBarra() { document.querySelector('meta[name="theme-color"]').content = temaActual() === 'dark' ? '#111213' : '#f6f5f2'; }
-$('#tema').addEventListener('click', () => {
-  const nuevo = temaActual() === 'dark' ? 'light' : 'dark';
-  document.documentElement.dataset.theme = nuevo;
-  try { localStorage.setItem('portal-tema', nuevo); } catch (e) {}
-  pintarBarra();
-});
 
 $('#anio').textContent = '© ' + new Date().getFullYear();
-pintarBarra(); stats(); chips(); render();
+stats(); chips(); render();
 </script>
 </body>
 </html>
