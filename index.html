@@ -265,6 +265,10 @@ body:not([data-estado="portal"]) #yo-btn { display: none; }
 .campo > span { font: 600 13px/1 var(--sans); color: var(--ink); }
 .campo input, .campo select { width: 100%; height: 46px; padding: 0 14px; border: 0; border-radius: var(--r-md); background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--line); color: var(--text); font: 400 15px var(--sans); transition: box-shadow .15s var(--ease); }
 .campo input:focus, .campo select:focus { outline: none; box-shadow: inset 0 0 0 1px var(--line), 0 0 0 2px var(--accent); background: var(--surface); }
+.campo { position: relative; }
+.campo input.con-ojo { padding-right: 48px; }
+.ojo { position: absolute; right: 4px; bottom: 4px; width: 38px; height: 38px; border: 0; border-radius: 9px; background: none; color: var(--muted); display: grid; place-items: center; }
+.ojo:hover { color: var(--ink); }
 .msg { min-height: 20px; margin: 2px 0 12px; font-size: 13.5px; color: var(--warn); }
 .msg.ok { color: var(--ok); }
 .btn { width: 100%; height: 46px; border: 0; border-radius: var(--r-md); background: var(--ink); color: var(--paper); font: 600 15px var(--sans); transition: transform .1s var(--ease), opacity .15s; }
@@ -763,6 +767,32 @@ const CAMPOS_CLAVE = `
   <label class="campo"><span>Contraseña nueva</span><input name="nueva" type="password" autocomplete="new-password" required></label>
   <label class="campo"><span>Repetila</span><input name="repetir" type="password" autocomplete="new-password" required></label>`;
 
+const OJO = '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>';
+const OJO_NO = '<path d="M3 3l18 18"/><path d="M10.6 5.1A10.4 10.4 0 0 1 12 5c6.5 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.2M6.6 6.6C3.8 8.4 2 12 2 12s3.5 7 10 7c1.9 0 3.6-.6 5-1.4"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>';
+
+// Agrega el ojito para mostrar/ocultar a cada campo de contraseña
+function ponerOjos(raiz) {
+  raiz.querySelectorAll('.campo input[type=password]').forEach(inp => {
+    if (inp.dataset.ojo) return;
+    inp.dataset.ojo = '1';
+    inp.classList.add('con-ojo');
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'ojo';
+    const pintar = () => {
+      const visible = inp.type === 'text';
+      b.innerHTML = svg(visible ? OJO_NO : OJO);
+      b.setAttribute('aria-label', visible ? 'Ocultar contraseña' : 'Mostrar contraseña');
+    };
+    b.addEventListener('click', () => { inp.type = inp.type === 'password' ? 'text' : 'password'; pintar(); inp.focus(); });
+    b.pintar = pintar;
+    pintar();
+    inp.after(b);
+  });
+}
+function ocultarClaves(raiz) {
+  raiz.querySelectorAll('input[data-ojo]').forEach(inp => { inp.type = 'password'; inp.nextElementSibling?.pintar?.(); });
+}
+
 function mostrarAcceso(modo, extra = {}) {
   document.body.dataset.estado = 'acceso';
   const caja = $('#acceso-caja');
@@ -803,6 +833,7 @@ function mostrarAcceso(modo, extra = {}) {
   };
   caja.innerHTML = vistas[modo];
   caja.dataset.codigo = extra.codigo || '';
+  ponerOjos(caja);
   const primero = caja.querySelector('input:not([value]), input[value=""]') || caja.querySelector('input');
   if (primero && matchMedia('(hover: hover)').matches) primero.focus();
 }
@@ -880,6 +911,7 @@ $('#yo-btn').addEventListener('click', () => {
   $('#cta-quien').textContent = `${yo.usuario.nombre} · ${yo.usuario.email}`;
   $('#ir-admin').hidden = !yo.usuario.superadmin;
   $('#f-cambiar').reset(); $('#f-cambiar .msg').textContent = '';
+  ponerOjos($('#f-cambiar')); ocultarClaves($('#f-cambiar'));
   $('#dlg-cuenta').showModal();
 });
 
