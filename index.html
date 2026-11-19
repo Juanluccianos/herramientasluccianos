@@ -253,6 +253,87 @@ main { flex: 1; padding-bottom: 80px; }
 footer { border-top: 1px solid var(--line); padding: 20px 0 calc(20px + env(safe-area-inset-bottom)); color: var(--muted); font-size: 12.5px; }
 footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 
+/* ---------- Acceso (login único) ---------- */
+body[data-estado="cargando"] #portal, body[data-estado="cargando"] #acceso,
+body[data-estado="acceso"] #portal, body[data-estado="portal"] #acceso,
+body:not([data-estado="portal"]) #yo-btn { display: none; }
+.acceso { min-height: calc(100dvh - 62px - 140px); display: grid; place-items: center; padding: 48px 0; }
+.acceso-caja { width: min(400px, 100%); background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--sh-card); padding: 32px 30px 26px; }
+.acceso-caja h1, .dlg h2 { margin: 0; font: 800 28px/1.1 var(--display); letter-spacing: -.03em; color: var(--ink); }
+.acceso-caja .sub, .dlg .sub { margin: 8px 0 22px; color: var(--muted); font-size: 14.5px; }
+.campo { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.campo > span { font: 600 13px/1 var(--sans); color: var(--ink); }
+.campo input, .campo select { width: 100%; height: 46px; padding: 0 14px; border: 0; border-radius: var(--r-md); background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--line); color: var(--text); font: 400 15px var(--sans); transition: box-shadow .15s var(--ease); }
+.campo input:focus, .campo select:focus { outline: none; box-shadow: inset 0 0 0 1px var(--line), 0 0 0 2px var(--accent); background: var(--surface); }
+.msg { min-height: 20px; margin: 2px 0 12px; font-size: 13.5px; color: var(--warn); }
+.msg.ok { color: var(--ok); }
+.btn { width: 100%; height: 46px; border: 0; border-radius: var(--r-md); background: var(--ink); color: var(--paper); font: 600 15px var(--sans); transition: transform .1s var(--ease), opacity .15s; }
+.btn:active { transform: scale(.98); }
+.btn[disabled] { opacity: .55; cursor: progress; }
+.btn.sec { background: var(--surface-2); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); }
+.btn.peligro { background: #fbe9dd; color: var(--warn); }
+.btn.chico { width: auto; height: auto; min-height: 38px; padding: 8px 14px; font-size: 14px; }
+.lnk { display: block; margin: 14px auto 0; padding: 4px; border: 0; background: none; color: var(--muted); font: 500 13.5px var(--sans); text-decoration: underline; text-underline-offset: 3px; }
+.lnk:hover { color: var(--ink); }
+
+/* Botón de la cuenta en la barra */
+.yo-btn { display: inline-flex; align-items: center; gap: 9px; height: 38px; padding: 0 12px 0 4px; border: 0; border-radius: var(--r-pill); background: var(--surface); box-shadow: var(--sh-card); font: 600 13.5px/1 var(--sans); color: var(--ink); }
+.yo-btn .ini { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: var(--paper); font: 700 12px/1 var(--sans); }
+.yo-btn:hover { box-shadow: var(--sh-card-h); }
+
+/* Ventanas */
+.dlg { border: 0; padding: 0; width: min(440px, calc(100% - 24px)); max-height: calc(100dvh - 40px); border-radius: var(--r-lg); background: var(--surface); color: var(--text); box-shadow: 0 24px 60px rgba(21,20,15,.25); }
+.dlg::backdrop { background: rgba(21,20,15,.34); }
+.dlg-in { padding: 26px 26px 22px; }
+.dlg-x { position: absolute; right: 14px; top: 14px; width: 34px; height: 34px; border: 0; border-radius: 50%; background: var(--surface-2); color: var(--muted); display: grid; place-items: center; }
+.dlg-x:hover { color: var(--ink); }
+.dlg hr { border: 0; border-top: 1px solid var(--line); margin: 20px 0; }
+.dlg h3 { margin: 0 0 12px; font: 700 15px/1.2 var(--display); color: var(--ink); }
+.dlg .acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+.dlg .acciones .btn { flex: 1; }
+
+/* Administración de usuarios */
+.dlg-admin { width: min(960px, calc(100% - 24px)); }
+.adm-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 4px 0 16px; padding-right: 40px; }
+.adm-top h2 { flex: 1; }
+.adm-top input { width: 240px; height: 38px; padding: 0 12px; border: 0; border-radius: 10px; background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--line); font: 400 14px var(--sans); }
+.adm-top input:focus { outline: none; box-shadow: inset 0 0 0 1px var(--line), 0 0 0 2px var(--accent); }
+.u-lista { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+.u-row { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 2fr) 130px; gap: 14px; align-items: center; padding: 12px 10px; border: 0; border-bottom: 1px solid var(--line); background: none; text-align: left; border-radius: 0; }
+.u-row:hover { background: var(--paper); }
+.u-row b { display: block; font: 600 14px/1.3 var(--sans); color: var(--ink); }
+.u-row small { display: block; font-size: 12.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.chip { --c: var(--app, #5f5d55); display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 8px; border-radius: var(--r-pill); background: color-mix(in oklab, var(--c) 12%, #fff); color: color-mix(in oklab, var(--c), #000 40%); font: 600 11.5px/1 var(--sans); white-space: nowrap; }
+.chip.todo { --c: var(--ink); }
+.estado { font-size: 12.5px; color: var(--muted); text-align: right; }
+.estado.sin { color: var(--warn); }
+.estado.off { color: #a3a098; }
+.permisos { display: flex; flex-direction: column; gap: 8px; }
+.perm { --c: var(--app); display: grid; grid-template-columns: 1fr 170px; gap: 10px; align-items: center; padding: 8px 8px 8px 12px; border-radius: var(--r-md); background: var(--paper); box-shadow: inset 3px 0 0 var(--c); }
+.perm label.nm { font: 600 13.5px var(--sans); color: var(--ink); }
+.perm select { height: 36px; padding: 0 10px; border: 0; border-radius: 9px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); font: 500 13.5px var(--sans); }
+.perm .ext { grid-column: 1 / -1; display: flex; gap: 14px; font-size: 13px; color: var(--muted); }
+.chk { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; font-size: 14px; cursor: pointer; }
+.chk input { width: 18px; height: 18px; margin: 1px 0 0; accent-color: var(--ink); flex: none; }
+.chk small { display: block; color: var(--muted); font-size: 12.5px; }
+.ed-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+.ed-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; }
+.link-box { margin-top: 12px; padding: 12px; border-radius: var(--r-md); background: #ebf2e1; font-size: 13px; }
+.link-box code { display: block; margin: 6px 0 10px; padding: 8px 10px; border-radius: 8px; background: #fff; word-break: break-all; font: 500 12px/1.4 ui-monospace, monospace; }
+.volver { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 14px; padding: 0; border: 0; background: none; color: var(--muted); font: 600 13.5px var(--sans); }
+.volver:hover { color: var(--ink); }
+.aviso { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); z-index: 50; transform: translate(-50%, 20px); max-width: calc(100% - 32px); padding: 12px 18px; border-radius: var(--r-md); background: var(--ink); color: var(--paper); font: 500 14px var(--sans); opacity: 0; pointer-events: none; transition: opacity .2s, transform .25s var(--ease-out); }
+.aviso.on { opacity: 1; transform: translate(-50%, 0); }
+@media (max-width: 760px) {
+  .u-row { grid-template-columns: 1fr; gap: 6px; }
+  .estado { text-align: left; }
+  .ed-grid { grid-template-columns: 1fr; gap: 0; }
+  .ed-cols { grid-template-columns: 1fr; gap: 24px; }
+  .adm-top input { width: 100%; order: 3; }
+  .perm { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 1100px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 860px) {
   .hero { grid-template-columns: 1fr; gap: 22px; padding-top: 36px; }
@@ -274,7 +355,7 @@ footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wr
 }
 </style>
 </head>
-<body class="intro">
+<body class="intro" data-estado="cargando">
 
 <header class="top" id="top">
   <div class="wrap">
@@ -285,11 +366,17 @@ footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wr
     </a>
     <span class="sp"></span>
     <span class="hoy" id="hoy"></span>
+    <button class="yo-btn" id="yo-btn" type="button" aria-label="Mi cuenta"></button>
   </div>
 </header>
 
 <main>
   <div class="wrap">
+<section class="acceso" id="acceso" aria-live="polite">
+  <div class="acceso-caja" id="acceso-caja"></div>
+</section>
+
+  <div id="portal">
     <section class="hero">
       <div>
         <h1>Herramientas<br><span>de Administración</span></h1>
@@ -323,7 +410,38 @@ footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wr
       <br><button type="button" id="limpiar">Limpiar búsqueda</button>
     </div>
   </div>
+  </div>
 </main>
+
+
+<dialog class="dlg" id="dlg-cuenta" aria-labelledby="cta-t">
+  <button class="dlg-x" type="button" data-cerrar aria-label="Cerrar"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  <div class="dlg-in">
+    <h2 id="cta-t">Mi cuenta</h2>
+    <p class="sub" id="cta-quien"></p>
+    <h3>Cambiar contraseña</h3>
+    <form id="f-cambiar" novalidate>
+      <label class="campo"><span>Contraseña actual</span><input name="actual" type="password" autocomplete="current-password"></label>
+      <label class="campo"><span>Contraseña nueva</span><input name="nueva" type="password" autocomplete="new-password"></label>
+      <label class="campo"><span>Repetí la contraseña nueva</span><input name="repetir" type="password" autocomplete="new-password"></label>
+      <p class="msg" role="alert"></p>
+      <button class="btn" type="submit">Cambiar contraseña</button>
+    </form>
+    <hr>
+    <div class="acciones">
+      <button class="btn sec" type="button" id="ir-admin" hidden>Administrar usuarios</button>
+      <button class="btn sec" type="button" id="salir">Cerrar sesión</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog class="dlg dlg-admin" id="dlg-admin" aria-label="Administrar usuarios">
+  <button class="dlg-x" type="button" data-cerrar aria-label="Cerrar"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  <div class="dlg-in" id="adm"></div>
+</dialog>
+
+<div class="aviso" id="aviso" role="status"></div>
+
 
 <footer>
   <div class="wrap">
@@ -363,7 +481,7 @@ const DISP = {
   tablet:     '<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M11 18h2"/>'
 };
 
-const APPS = [
+const APPS_TODAS = [
   { nombre: 'Facturas de proveedores', repo: 'facturasluccianos', url: 'https://facturas.luccianos.com.ar/', area: 'compras', icono: 'factura', color: '#5E8F3A',
     resumen: 'Recepción, validación y registración en Shares de las facturas recibidas por correo.',
     puntos: ['Lectura automatizada de comprobantes mediante IA', 'Constatación en ARCA y bandeja de revisión', 'Propuestas de pago y circuito de aprobación'],
@@ -480,7 +598,8 @@ const guardar = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } 
 
 let filtro = 'todas';
 let vista = leer('herr.vista', 'tarjetas');
-let recientes = leer('herr.recientes', []).filter(r => APPS.some(a => a.repo === r));
+let APPS = [];                       // las que ve el usuario logueado (se arma al ingresar)
+let recientes = leer('herr.recientes', []);
 
 /* =============================================================================
    Render
@@ -552,7 +671,7 @@ const sinIntro = () => document.body.classList.remove('intro');
    ============================================================================= */
 document.addEventListener('click', e => {
   const a = e.target.closest('[data-repo]');
-  if (a) registrarUso(a.dataset.repo);
+  if (a) { registrarUso(a.dataset.repo); abrirApp(e, a); }
   const t = e.target.closest('.tab');
   if (t) { sinIntro(); filtro = t.dataset.id; tabs(); render(); }
   const v = e.target.closest('.seg button');
@@ -561,7 +680,7 @@ document.addEventListener('click', e => {
 
 $('#q').addEventListener('input', () => { sinIntro(); render(); });
 $('#q').addEventListener('keydown', e => {
-  if (e.key === 'Enter') { const p = $('#lista .card'); if (p) { registrarUso(p.dataset.repo); window.open(p.href, '_blank', 'noopener'); } }
+  if (e.key === 'Enter') { const p = $('#lista .card'); if (p) { p.click(); } }
   if (e.key === 'ArrowDown') { const p = $('#lista .card'); if (p) { e.preventDefault(); p.focus(); } }
 });
 $('#limpiar').addEventListener('click', () => { $('#q').value = ''; filtro = 'todas'; tabs(); render(); $('#q').focus(); });
@@ -584,8 +703,398 @@ document.addEventListener('keydown', e => {
 addEventListener('scroll', () => $('#top').classList.toggle('scrolled', scrollY > 4), { passive: true });
 $('#hoy').textContent = new Date().toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' }).replace(/^./, c => c.toUpperCase());
 $('#anio').textContent = '© ' + new Date().getFullYear();
-setTimeout(sinIntro, 1400);
-aplicarVista(); renderRecientes(); tabs(); render();
+/* =============================================================================
+   ACCESO — login único (Worker acceso-api)
+   ============================================================================= */
+const API = 'https://acceso-api.lucciano-viaticos.workers.dev';
+const ID_ACCESO = {
+  facturasluccianos: 'facturas', facturasefectivoluccianos: 'efectivo', viaticosluccianos: 'viaticos',
+  asientosluccianos: 'asientos', payway: 'payway', costosluccianos: 'costos', relevamientosluccianos: 'relevamientos'
+};
+// Apps que ya usan el login único: al abrirlas, el portal les pasa el acceso.
+// Se suman de a una a medida que se migran (ej: ['asientos']). Las demás se abren como siempre.
+const CON_LOGIN_UNICO = [];
+const ROL_NOMBRE = { carga: 'Carga', aprobador: 'Aprobador', admin: 'Admin', solo_escaneo: 'Solo escaneo', supervisor: 'Supervisor', jefe: 'Jefe', consulta: 'Consulta', editor: 'Editor' };
+const EXTRA_NOMBRE = { director: 'Director (aprueba lotes de pago)' };
+APPS_TODAS.forEach(a => { a.acceso = ID_ACCESO[a.repo] || null; });
+
+let token = leer('herr.token', '');
+let yo = null;
+
+async function api(ruta, { metodo = 'GET', datos } = {}) {
+  let r;
+  try {
+    r = await fetch(API + ruta, {
+      method: metodo,
+      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}) },
+      body: datos ? JSON.stringify(datos) : undefined
+    });
+  } catch { throw new Error('No se pudo conectar. Revisá tu conexión a internet.'); }
+  let j = {};
+  try { j = await r.json(); } catch {}
+  if (r.status === 401 && token && ruta !== '/login') { cerrarLocal(); throw new Error(j.error || 'Sesión cerrada'); }
+  if (!r.ok) throw new Error(j.error || 'Algo salió mal. Probá de nuevo.');
+  return j;
+}
+
+function aviso(txt) {
+  const el = $('#aviso');
+  el.textContent = txt; el.classList.add('on');
+  clearTimeout(aviso.t); aviso.t = setTimeout(() => el.classList.remove('on'), 3800);
+}
+
+const primerNombre = n => String(n || '').trim().split(/\s+/)[0];
+const iniciales = n => String(n || '').trim().split(/\s+/).slice(0, 2).map(p => p[0] || '').join('').toUpperCase();
+const fecha = s => s ? new Date(s.replace(' ', 'T') + 'Z').toLocaleDateString('es-AR', { day: 'numeric', month: 'short' }) : '';
+
+async function enviando(form, fn) {
+  const btn = form.querySelector('button[type=submit]'), msg = form.querySelector('.msg');
+  msg.textContent = ''; msg.classList.remove('ok'); btn.disabled = true;
+  try { await fn(msg); } catch (e) { msg.textContent = e.message; } finally { btn.disabled = false; }
+}
+
+function claveRepetida(f) {
+  if (f.nueva.value !== f.repetir.value) throw new Error('Las dos contraseñas no coinciden');
+  return f.nueva.value;
+}
+
+/* ---------- Pantallas de ingreso ---------- */
+const CAMPOS_CLAVE = `
+  <label class="campo"><span>Contraseña nueva</span><input name="nueva" type="password" autocomplete="new-password" required></label>
+  <label class="campo"><span>Repetila</span><input name="repetir" type="password" autocomplete="new-password" required></label>`;
+
+function mostrarAcceso(modo, extra = {}) {
+  document.body.dataset.estado = 'acceso';
+  const caja = $('#acceso-caja');
+  const vistas = {
+    login: `
+      <h1>Ingresá</h1>
+      <p class="sub">Con tu mail y tu contraseña. Es la misma para todas las herramientas.</p>
+      <form data-form="login" novalidate>
+        <label class="campo"><span>Mail</span><input name="email" type="email" autocomplete="username" inputmode="email" required value="${esc(extra.email || '')}"></label>
+        <label class="campo"><span>Contraseña</span><input name="clave" type="password" autocomplete="current-password" required></label>
+        <p class="msg" role="alert">${esc(extra.msg || '')}</p>
+        <button class="btn" type="submit">Ingresar</button>
+      </form>
+      <button class="lnk" type="button" data-ir="olvide">Me olvidé la contraseña</button>`,
+    olvide: `
+      <h1>Contraseña nueva</h1>
+      <p class="sub">Escribí tu mail y te mandamos un link para elegir una contraseña nueva.</p>
+      <form data-form="olvide" novalidate>
+        <label class="campo"><span>Mail</span><input name="email" type="email" autocomplete="username" inputmode="email" required value="${esc(extra.email || '')}"></label>
+        <p class="msg" role="alert"></p>
+        <button class="btn" type="submit">Mandarme el link</button>
+      </form>
+      <button class="lnk" type="button" data-ir="login">Volver a ingresar</button>`,
+    clave: `
+      <h1>Elegí tu contraseña</h1>
+      <p class="sub">Al menos 8 caracteres, con letras y números. Vas a usarla en todas las herramientas.</p>
+      <form data-form="clave" novalidate>${CAMPOS_CLAVE}
+        <p class="msg" role="alert"></p>
+        <button class="btn" type="submit">Guardar y entrar</button>
+      </form>`,
+    cambiar: `
+      <h1>Cambiá tu contraseña</h1>
+      <p class="sub">Es tu primer ingreso. Elegí una contraseña propia: al menos 8 caracteres, con letras y números.</p>
+      <form data-form="cambiar" novalidate>${CAMPOS_CLAVE}
+        <p class="msg" role="alert"></p>
+        <button class="btn" type="submit">Guardar y entrar</button>
+      </form>`
+  };
+  caja.innerHTML = vistas[modo];
+  caja.dataset.codigo = extra.codigo || '';
+  const primero = caja.querySelector('input:not([value]), input[value=""]') || caja.querySelector('input');
+  if (primero && matchMedia('(hover: hover)').matches) primero.focus();
+}
+
+$('#acceso').addEventListener('click', e => {
+  const ir = e.target.closest('[data-ir]');
+  if (ir) mostrarAcceso(ir.dataset.ir, { email: $('#acceso-caja input[name=email]')?.value });
+});
+
+$('#acceso').addEventListener('submit', e => {
+  e.preventDefault();
+  const f = e.target, modo = f.dataset.form;
+  enviando(f, async msg => {
+    if (modo === 'login') {
+      const r = await api('/login', { metodo: 'POST', datos: { email: f.email.value, clave: f.clave.value } });
+      entrar(r);
+    } else if (modo === 'olvide') {
+      const r = await api('/olvide', { metodo: 'POST', datos: { email: f.email.value } });
+      msg.textContent = r.mensaje + ' Si no te llega, pedile un link nuevo a Administración.';
+      msg.classList.add('ok');
+    } else if (modo === 'clave') {
+      const r = await api('/definir-clave', { metodo: 'POST', datos: { codigo: $('#acceso-caja').dataset.codigo, nueva: claveRepetida(f) } });
+      history.replaceState(null, '', location.pathname + location.search);
+      entrar(r);
+    } else if (modo === 'cambiar') {
+      await api('/cambiar-clave', { metodo: 'POST', datos: { nueva: claveRepetida(f) } });
+      yo.debe_cambiar_clave = false;
+      mostrarPortal();
+    }
+  });
+});
+
+function entrar(datos) {
+  if (datos.token) { token = datos.token; guardar('herr.token', token); }
+  yo = datos;
+  if (yo.debe_cambiar_clave) mostrarAcceso('cambiar');
+  else mostrarPortal();
+}
+
+function cerrarLocal() {
+  token = ''; yo = null;
+  try { localStorage.removeItem('herr.token'); } catch {}
+  document.querySelectorAll('dialog[open]').forEach(d => d.close());
+  mostrarAcceso('login');
+}
+
+/* ---------- Portal ---------- */
+function mostrarPortal() {
+  const mias = new Set(yo.apps.map(a => a.id));
+  APPS = APPS_TODAS.filter(a => !a.acceso || mias.has(a.acceso));
+  recientes = recientes.filter(r => APPS.some(a => a.repo === r));
+  if (filtro !== 'todas' && !APPS.some(a => a.area === filtro)) filtro = 'todas';
+  $('#yo-btn').innerHTML = `<span class="ini">${esc(iniciales(yo.usuario.nombre))}</span>${esc(primerNombre(yo.usuario.nombre))}`;
+  document.body.dataset.estado = 'portal';
+  aplicarVista(); renderRecientes(); tabs(); render();
+  setTimeout(sinIntro, 1400);
+}
+
+async function abrirApp(e, el) {
+  const a = APPS.find(x => x.repo === el.dataset.repo);
+  if (!a || !a.acceso || !CON_LOGIN_UNICO.includes(a.acceso)) return; // se abre como siempre
+  e.preventDefault();
+  const w = window.open('about:blank', '_blank');
+  try {
+    const { url } = await api('/pase', { metodo: 'POST', datos: { app: a.acceso } });
+    if (w) { w.opener = null; w.location.href = url; } else location.href = url;
+  } catch (err) {
+    if (w) w.close();
+    aviso(err.message);
+  }
+}
+
+/* ---------- Mi cuenta ---------- */
+$('#yo-btn').addEventListener('click', () => {
+  $('#cta-quien').textContent = `${yo.usuario.nombre} · ${yo.usuario.email}`;
+  $('#ir-admin').hidden = !yo.usuario.superadmin;
+  $('#f-cambiar').reset(); $('#f-cambiar .msg').textContent = '';
+  $('#dlg-cuenta').showModal();
+});
+
+$('#f-cambiar').addEventListener('submit', e => {
+  e.preventDefault();
+  const f = e.target;
+  enviando(f, async msg => {
+    await api('/cambiar-clave', { metodo: 'POST', datos: { actual: f.actual.value, nueva: claveRepetida(f) } });
+    f.reset(); msg.textContent = 'Listo, ya podés usar tu contraseña nueva.'; msg.classList.add('ok');
+  });
+});
+
+$('#salir').addEventListener('click', async () => {
+  try { await api('/logout', { metodo: 'POST' }); } catch {}
+  cerrarLocal();
+});
+
+document.addEventListener('click', e => {
+  if (e.target.closest('[data-cerrar]')) e.target.closest('dialog').close();
+  if (e.target.matches('dialog')) e.target.close(); // clic afuera
+});
+
+/* ---------- Administrar usuarios (superadmin) ---------- */
+const adm = { usuarios: [], apps: [], q: '' };
+
+$('#ir-admin').addEventListener('click', async () => {
+  $('#dlg-cuenta').close();
+  $('#adm').innerHTML = '<p class="sub">Cargando…</p>';
+  $('#dlg-admin').showModal();
+  await cargarUsuarios();
+});
+
+async function cargarUsuarios() {
+  try {
+    const r = await api('/admin/usuarios');
+    adm.usuarios = r.usuarios; adm.apps = r.apps;
+    listaUsuarios();
+  } catch (e) { $('#adm').innerHTML = `<p class="msg">${esc(e.message)}</p>`; }
+}
+
+const appDe = id => adm.apps.find(a => a.id === id);
+
+function estadoDe(u) {
+  if (!u.activo) return '<span class="estado off">Desactivado</span>';
+  if (!u.tiene_clave) return '<span class="estado sin">Sin activar</span>';
+  return `<span class="estado">${u.ultimo_acceso ? 'Último ingreso ' + fecha(u.ultimo_acceso) : 'Activo'}</span>`;
+}
+
+function chipsDe(u) {
+  if (u.superadmin) return '<span class="chip todo">Superadmin · todas las apps</span>';
+  if (!u.permisos.length) return '<small>Sin apps</small>';
+  return u.permisos.map(p => {
+    const a = appDe(p.app);
+    const ext = p.extras.length ? ' + ' + p.extras.join(', ') : '';
+    return `<span class="chip" style="--app:${a ? a.color : '#5f5d55'}">${esc(a ? a.nombre : p.app)} · ${esc((ROL_NOMBRE[p.rol] || p.rol) + ext)}</span>`;
+  }).join('');
+}
+
+function listaUsuarios() {
+  const q = norm(adm.q);
+  const lista = adm.usuarios.filter(u => !q || norm(u.nombre + ' ' + u.email).includes(q));
+  const sinActivar = adm.usuarios.filter(u => u.activo && !u.tiene_clave).length;
+  $('#adm').innerHTML = `
+    <div class="adm-top">
+      <h2>Usuarios</h2>
+      <input id="adm-q" type="search" placeholder="Buscar por nombre o mail" value="${esc(adm.q)}" autocomplete="off">
+      <button class="btn chico" type="button" data-adm="nuevo">Nuevo usuario</button>
+    </div>
+    <p class="sub">${adm.usuarios.length} usuarios${sinActivar === 1 ? ' · 1 todavía no eligió su contraseña' : sinActivar ? ` · ${sinActivar} todavía no eligieron su contraseña` : ''}.</p>
+    <div class="u-lista">${lista.map(u => `
+      <button class="u-row" type="button" data-adm="editar" data-id="${u.id}">
+        <span><b>${esc(u.nombre)}</b><small>${esc(u.email)}</small></span>
+        <span class="chips">${chipsDe(u)}</span>
+        ${estadoDe(u)}
+      </button>`).join('') || '<p class="sub" style="padding:16px 10px">No hay usuarios que coincidan.</p>'}
+    </div>`;
+  const q2 = $('#adm-q');
+  q2.addEventListener('input', () => { adm.q = q2.value; const pos = q2.selectionStart; listaUsuarios(); const n = $('#adm-q'); n.focus(); n.setSelectionRange(pos, pos); });
+}
+
+function editorUsuario(u) {
+  const nuevo = !u;
+  u = u || { nombre: '', email: '', superadmin: 0, activo: 1, permisos: [] };
+  const filas = adm.apps.map(a => {
+    const p = u.permisos.find(x => x.app === a.id);
+    const opts = ['<option value="">Sin acceso</option>', ...a.roles.map(r => `<option value="${r}" ${p && p.rol === r ? 'selected' : ''}>${esc(ROL_NOMBRE[r] || r)}</option>`)].join('');
+    const ext = a.extras.map(x => `<label><input type="checkbox" data-extra="${x}" ${p && p.extras.includes(x) ? 'checked' : ''}> ${esc(EXTRA_NOMBRE[x] || x)}</label>`).join('');
+    return `<div class="perm" data-app="${a.id}" style="--app:${a.color}">
+      <label class="nm" for="rol-${a.id}">${esc(a.nombre)}</label>
+      <select id="rol-${a.id}">${opts}</select>
+      ${ext ? `<div class="ext">${ext}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  $('#adm').innerHTML = `
+    <button class="volver" type="button" data-adm="lista"><svg class="i" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>Usuarios</button>
+    <h2>${nuevo ? 'Nuevo usuario' : esc(u.nombre)}</h2>
+    <p class="sub">${nuevo ? 'Después de crearlo vas a poder mandarle el link para que elija su contraseña.' : esc(u.email)}</p>
+    <form id="f-usuario" novalidate>
+      <div class="ed-cols">
+        <div>
+          <div class="ed-grid">
+            <label class="campo"><span>Nombre</span><input name="nombre" value="${esc(u.nombre)}" required></label>
+            <label class="campo"><span>Mail</span><input name="email" type="email" value="${esc(u.email)}" required></label>
+          </div>
+          <label class="chk"><input type="checkbox" name="superadmin" ${u.superadmin ? 'checked' : ''}><span>Superadmin<small>Entra a todas las apps como admin y puede administrar usuarios.</small></span></label>
+          ${nuevo ? '' : `<label class="chk"><input type="checkbox" name="activo" ${u.activo ? 'checked' : ''}><span>Activo<small>Si lo desactivás, queda afuera de todas las apps al instante.</small></span></label>`}
+          ${nuevo ? `<label class="chk"><input type="checkbox" name="enviar" checked><span>Mandarle el mail de bienvenida<small>Con el link para elegir su contraseña.</small></span></label>` : ''}
+          <p class="msg" role="alert"></p>
+          <button class="btn" type="submit">${nuevo ? 'Crear usuario' : 'Guardar cambios'}</button>
+          ${nuevo ? '' : `
+          <hr>
+          <h3>Acceso</h3>
+          <div class="acciones">
+            <button class="btn sec chico" type="button" data-adm="link" data-id="${u.id}">${u.tiene_clave ? 'Mandar link para cambiar la contraseña' : 'Mandar link de activación'}</button>
+            ${u.tiene_clave ? `<button class="btn peligro chico" type="button" data-adm="blanquear" data-id="${u.id}">Blanquear contraseña</button>` : ''}
+            <button class="btn sec chico" type="button" data-adm="sesiones" data-id="${u.id}">Cerrar sus sesiones</button>
+          </div>`}
+          <div id="link-res"></div>
+        </div>
+        <div id="ed-apps" ${u.superadmin ? 'hidden' : ''}>
+          <h3>Apps y rol</h3>
+          <div class="permisos">${filas}</div>
+        </div>
+      </div>
+    </form>`;
+  const f = $('#f-usuario');
+  f.dataset.id = nuevo ? '' : u.id;
+  f.superadmin.addEventListener('change', () => { $('#ed-apps').hidden = f.superadmin.checked; });
+}
+
+function mostrarLink(r) {
+  $('#link-res').innerHTML = `<div class="link-box">
+    ${r.mail_enviado ? 'Le mandamos el mail con el link.' : 'El mail no se pudo mandar. Copiá el link y mandáselo por WhatsApp.'}
+    El link vence en ${r.vence_en_horas} horas y sirve una sola vez.
+    <code>${esc(r.link)}</code>
+    <button class="btn sec chico" type="button" data-copiar="${esc(r.link)}">Copiar link</button>
+  </div>`;
+}
+
+function leerPermisos() {
+  return [...document.querySelectorAll('#ed-apps .perm')].map(el => ({
+    app: el.dataset.app,
+    rol: el.querySelector('select').value,
+    extras: [...el.querySelectorAll('[data-extra]:checked')].map(x => x.dataset.extra)
+  })).filter(p => p.rol);
+}
+
+$('#adm').addEventListener('submit', e => {
+  e.preventDefault();
+  const f = e.target, id = f.dataset.id;
+  enviando(f, async msg => {
+    const datos = {
+      nombre: f.nombre.value, email: f.email.value,
+      superadmin: f.superadmin.checked,
+      permisos: f.superadmin.checked ? [] : leerPermisos()
+    };
+    if (id) {
+      datos.activo = f.activo.checked;
+      await api('/admin/usuarios/' + id, { metodo: 'PUT', datos });
+      msg.textContent = 'Cambios guardados.'; msg.classList.add('ok');
+      await refrescar(+id);
+    } else {
+      const r = await api('/admin/usuarios', { metodo: 'POST', datos: { ...datos, enviar: f.enviar.checked } });
+      await refrescar(r.id);
+      mostrarLink(r);
+    }
+  });
+});
+
+async function refrescar(id) {
+  const r = await api('/admin/usuarios');
+  adm.usuarios = r.usuarios; adm.apps = r.apps;
+  const u = adm.usuarios.find(x => x.id === id);
+  if (u) {
+    const msg = $('#f-usuario .msg')?.textContent, ok = $('#f-usuario .msg')?.classList.contains('ok');
+    editorUsuario(u);
+    if (msg) { const m = $('#f-usuario .msg'); m.textContent = msg; m.classList.toggle('ok', ok); }
+  }
+}
+
+$('#adm').addEventListener('click', async e => {
+  const cp = e.target.closest('[data-copiar]');
+  if (cp) { try { await navigator.clipboard.writeText(cp.dataset.copiar); aviso('Link copiado'); } catch { aviso('No se pudo copiar: seleccionalo a mano'); } return; }
+  const b = e.target.closest('[data-adm]');
+  if (!b) return;
+  const id = +b.dataset.id, acc = b.dataset.adm;
+  if (acc === 'lista') return listaUsuarios();
+  if (acc === 'nuevo') return editorUsuario(null);
+  if (acc === 'editar') return editorUsuario(adm.usuarios.find(u => u.id === id));
+  try {
+    b.disabled = true;
+    if (acc === 'link') {
+      mostrarLink(await api(`/admin/usuarios/${id}/acceso`, { metodo: 'POST', datos: { enviar: true } }));
+    } else if (acc === 'blanquear') {
+      if (!confirm('Se le borra la contraseña y queda afuera de todas las apps hasta que elija una nueva con el link. ¿Seguimos?')) return;
+      const r = await api(`/admin/usuarios/${id}/acceso`, { metodo: 'POST', datos: { blanquear: true, enviar: true } });
+      await refrescar(id); mostrarLink(r);
+    } else if (acc === 'sesiones') {
+      await api(`/admin/usuarios/${id}/cerrar-sesiones`, { metodo: 'POST' });
+      aviso('Listo: tiene que volver a ingresar en todos sus dispositivos.');
+    }
+  } catch (err) { aviso(err.message); } finally { b.disabled = false; }
+});
+
+/* ---------- Arranque ---------- */
+async function arrancar() {
+  const h = new URLSearchParams(location.hash.slice(1));
+  if (h.get('clave')) return mostrarAcceso('clave', { codigo: h.get('clave') });
+  if (!token) return mostrarAcceso('login');
+  try { entrar(await api('/yo')); }
+  catch (e) { if (token) mostrarAcceso('login', { msg: e.message }); }
+}
+aplicarVista();
+arrancar();
 </script>
 </body>
 </html>
