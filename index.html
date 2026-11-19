@@ -253,32 +253,117 @@ main { flex: 1; padding-bottom: 80px; }
 footer { border-top: 1px solid var(--line); padding: 20px 0 calc(20px + env(safe-area-inset-bottom)); color: var(--muted); font-size: 12.5px; }
 footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 
-/* ---------- Acceso (login único) ---------- */
+/* ---------- Acceso (login único) — pantalla completa con el helado ---------- */
 body[data-estado="cargando"] #portal, body[data-estado="cargando"] #acceso,
 body[data-estado="acceso"] #portal, body[data-estado="portal"] #acceso,
 body:not([data-estado="portal"]) #yo-btn { display: none; }
-.acceso { min-height: calc(100dvh - 62px - 140px); display: grid; place-items: center; padding: 48px 0; }
-.acceso-caja { width: min(400px, 100%); background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--sh-card); padding: 32px 30px 26px; }
-.acceso-caja h1, .dlg h2 { margin: 0; font: 800 28px/1.1 var(--display); letter-spacing: -.03em; color: var(--ink); }
-.acceso-caja .sub, .dlg .sub { margin: 8px 0 22px; color: var(--muted); font-size: 14.5px; }
-.campo { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+body[data-estado="acceso"] .top, body[data-estado="acceso"] footer { display: none; }
+body[data-estado="acceso"] { overflow: hidden; }
+
+.acceso { position: fixed; inset: 0; z-index: 30; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(420px, 1fr); background: var(--surface); overflow-y: auto; }
+
+/* Escena */
+.acc-escena { position: relative; overflow: hidden; background: #f3e7d3; display: grid; place-items: center; min-height: 100dvh; }
+.acc-escena::before { content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -58%); width: min(70vh, 80%); aspect-ratio: 1; border-radius: 50%; background: #faf3e7; box-shadow: 0 0 0 28px rgba(250,243,231,.45), 0 0 0 64px rgba(250,243,231,.22); }
+.acc-svg { position: relative; height: min(72vh, 660px); width: auto; max-width: 80%; margin-bottom: 9vh; overflow: visible; }
+.acc-lema { position: absolute; left: clamp(28px, 4vw, 56px); bottom: clamp(26px, 4vh, 48px); margin: 0; font: 800 clamp(26px, 2.6vw, 38px)/1.02 var(--display); letter-spacing: -.035em; color: var(--ink); }
+.acc-lema span { color: #9a6b3c; }
+.acc-sello { position: absolute; left: clamp(28px, 4vw, 56px); top: clamp(26px, 4vh, 44px); font: 600 13px/1 var(--sans); color: #8a7a62; }
+
+/* Panel del formulario */
+.acc-panel { display: grid; place-items: center; padding: 48px clamp(24px, 5vw, 72px); background: var(--surface); }
+.acc-form { width: min(380px, 100%); }
+.acc-logo { display: block; height: 46px; width: auto; margin-bottom: 36px; }
+.acceso-caja h1, .dlg h2 { margin: 0; font: 800 30px/1.08 var(--display); letter-spacing: -.035em; color: var(--ink); }
+.dlg h2 { font-size: 28px; }
+.acceso-caja .sub, .dlg .sub { margin: 10px 0 26px; color: var(--muted); font-size: 15px; }
+.acc-pie { margin: 40px 0 0; font-size: 12.5px; color: var(--muted); }
+
+.campo { display: flex; flex-direction: column; gap: 7px; margin-bottom: 16px; }
 .campo > span { font: 600 13px/1 var(--sans); color: var(--ink); }
-.campo input, .campo select { width: 100%; height: 46px; padding: 0 14px; border: 0; border-radius: var(--r-md); background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--line); color: var(--text); font: 400 15px var(--sans); transition: box-shadow .15s var(--ease); }
-.campo input:focus, .campo select:focus { outline: none; box-shadow: inset 0 0 0 1px var(--line), 0 0 0 2px var(--accent); background: var(--surface); }
+.campo input, .campo select { width: 100%; height: 50px; padding: 0 15px; border: 0; border-radius: 13px; background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--line); color: var(--text); font: 400 15.5px var(--sans); transition: box-shadow .15s var(--ease), background-color .15s var(--ease); }
+.campo input:hover { box-shadow: inset 0 0 0 1px var(--line-strong); }
+.campo input:focus, .campo select:focus { outline: none; box-shadow: inset 0 0 0 1px var(--accent), 0 0 0 4px color-mix(in oklab, var(--accent) 16%, transparent); background: var(--surface); }
 .campo { position: relative; }
-.campo input.con-ojo { padding-right: 48px; }
-.ojo { position: absolute; right: 4px; bottom: 4px; width: 38px; height: 38px; border: 0; border-radius: 9px; background: none; color: var(--muted); display: grid; place-items: center; }
-.ojo:hover { color: var(--ink); }
-.msg { min-height: 20px; margin: 2px 0 12px; font-size: 13.5px; color: var(--warn); }
+.campo input.con-ojo { padding-right: 52px; }
+.ojo { position: absolute; right: 5px; bottom: 5px; width: 40px; height: 40px; border: 0; border-radius: 10px; background: none; color: var(--muted); display: grid; place-items: center; transition: color .15s, background-color .15s; }
+.ojo:hover { color: var(--ink); background: var(--surface-2); }
+.msg { min-height: 20px; margin: 2px 0 14px; font-size: 13.5px; color: var(--warn); text-wrap: pretty; }
 .msg.ok { color: var(--ok); }
-.btn { width: 100%; height: 46px; border: 0; border-radius: var(--r-md); background: var(--ink); color: var(--paper); font: 600 15px var(--sans); transition: transform .1s var(--ease), opacity .15s; }
-.btn:active { transform: scale(.98); }
-.btn[disabled] { opacity: .55; cursor: progress; }
+.btn { width: 100%; height: 50px; border: 0; border-radius: 13px; background: var(--ink); color: var(--paper); font: 600 15.5px var(--sans); display: inline-flex; align-items: center; justify-content: center; gap: 9px; transition: transform .12s var(--ease), opacity .15s, background-color .15s; }
+.btn:hover { background: #2a2820; }
+.btn:active { transform: scale(.97); }
+.btn[disabled] { opacity: .7; cursor: progress; }
+.btn .fl { width: 17px; height: 17px; transition: transform .2s var(--ease-out); }
+.btn:hover .fl { transform: translateX(3px); }
+.btn .spin { width: 17px; height: 17px; border-radius: 50%; border: 2px solid rgba(246,245,242,.3); border-top-color: var(--paper); animation: gira .6s linear infinite; }
+@keyframes gira { to { transform: rotate(360deg); } }
 .btn.sec { background: var(--surface-2); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); }
+.btn.sec:hover { background: var(--line); }
 .btn.peligro { background: #fbe9dd; color: var(--warn); }
 .btn.chico { width: auto; height: auto; min-height: 38px; padding: 8px 14px; font-size: 14px; }
-.lnk { display: block; margin: 14px auto 0; padding: 4px; border: 0; background: none; color: var(--muted); font: 500 13.5px var(--sans); text-decoration: underline; text-underline-offset: 3px; }
-.lnk:hover { color: var(--ink); }
+.lnk { display: block; margin: 18px auto 0; padding: 6px; border: 0; background: none; color: var(--muted); font: 500 13.5px var(--sans); text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 4px; transition: color .15s, text-decoration-color .15s; }
+.lnk:hover { color: var(--ink); text-decoration-color: currentColor; }
+
+/* Error: el formulario se sacude una vez */
+.acc-form.sacude { animation: sacude .42s var(--ease); }
+@keyframes sacude { 15% { transform: translateX(-7px); } 35% { transform: translateX(6px); } 55% { transform: translateX(-4px); } 75% { transform: translateX(2px); } }
+
+/* ---------- El helado ---------- */
+.hel .gotera, .hel .gota, .hel .charco, .hel .parpadeo, .hel .bocha, .hel .cono, .hel .granas, .hel-idle, .hel-salto { transform-box: fill-box; }
+.hel-tilt { transform-origin: 180px 505px; transform-box: view-box; }
+.hel-idle { transform-origin: 50% 100%; animation: flota 6.2s cubic-bezier(.45,0,.55,1) infinite; }
+@keyframes flota { 0%, 100% { transform: translateY(0) rotate(-1.2deg); } 50% { transform: translateY(-7px) rotate(1.2deg); } }
+.gotera { transform-origin: 50% 0; animation: derrite var(--d, 5s) cubic-bezier(.45,0,.55,1) infinite; animation-delay: var(--dl, 0s); }
+@keyframes derrite { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(var(--s, 1.35)); } }
+.gota { animation: cae 5.6s infinite; animation-delay: 1.8s; opacity: 0; }
+@keyframes cae {
+  0% { opacity: 0; transform: translateY(0) scale(.3); }
+  8% { opacity: 1; }
+  55% { opacity: 1; transform: translateY(0) scale(1); animation-timing-function: cubic-bezier(.55,0,1,.45); }
+  72% { opacity: 1; transform: translateY(192px) scale(.9, 1.15); }
+  73%, 100% { opacity: 0; transform: translateY(192px) scale(1); }
+}
+.charco { transform-origin: 50% 50%; animation: charco 5.6s infinite; animation-delay: 1.8s; }
+@keyframes charco { 0%, 71% { transform: scale(1); } 76% { transform: scale(1.35, 1.2); } 100% { transform: scale(1); } }
+.ojos-abiertos, .ojos-cerrados, .ojo-espia, .boca-triste { transition: opacity .15s var(--ease); }
+.ojos-cerrados, .ojo-espia, .boca-triste { opacity: 0; }
+.parpadeo { transform-origin: 50% 50%; animation: parpadea 4.7s infinite; }
+@keyframes parpadea { 0%, 94%, 100% { transform: scaleY(1); } 96.5% { transform: scaleY(.1); } }
+.pupilas { transition: transform .12s linear; }
+.hel.cierra .ojos-abiertos { opacity: 0; } .hel.cierra .ojos-cerrados { opacity: 1; }
+.hel.espia .ojos-abiertos { opacity: 0; } .hel.espia .ojos-cerrados { opacity: 0; } .hel.espia .ojo-espia { opacity: 1; }
+.hel.triste .boca-feliz { opacity: 0; } .hel.triste .boca-triste { opacity: 1; }
+.hel.triste .gotera { --d: 1.6s !important; }
+.hel-salto { transform-origin: 50% 100%; }
+.hel.festeja .hel-salto { animation: salto .7s cubic-bezier(.34,1.56,.64,1); }
+@keyframes salto { 0% { transform: translateY(0) scale(1); } 22% { transform: translateY(6px) scale(1.04, .95); } 55% { transform: translateY(-26px) scale(.98, 1.03); } 100% { transform: translateY(0) scale(1); } }
+.hel.triste .hel-salto { animation: no .5s var(--ease); }
+@keyframes no { 20% { transform: rotate(-4deg); } 45% { transform: rotate(3.5deg); } 70% { transform: rotate(-2deg); } }
+
+/* Entrada: se arma el cucurucho (una vez por sesión) */
+.armando .cono { animation: entraCono .55s var(--ease-out) both; }
+.armando .bocha { animation: plop .6s cubic-bezier(.34,1.56,.64,1) both; }
+.armando .b1 { animation-delay: .16s; } .armando .b2 { animation-delay: .3s; } .armando .b3 { animation-delay: .42s; }
+.armando .granas { animation: aparece .4s var(--ease-out) .72s both; }
+.armando .acc-form { animation: entraForm .55s var(--ease-out) .08s both; }
+.armando .acc-lema { animation: entraForm .6s var(--ease-out) .5s both; }
+@keyframes entraCono { from { opacity: 0; transform: translateY(26px); } }
+@keyframes plop { from { opacity: 0; transform: translateY(-90px); } 60% { opacity: 1; } }
+@keyframes aparece { from { opacity: 0; transform: scale(.6); } }
+@keyframes entraForm { from { opacity: 0; transform: translateY(10px); } }
+
+@media (max-width: 900px) {
+  .acceso { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  .acc-escena { min-height: 0; height: 40dvh; min-height: 300px; }
+  .acc-escena::before { width: min(62vw, 330px); transform: translate(-50%, -50%); }
+  .acc-svg { width: auto; height: 86%; margin: 0; }
+  .acc-lema, .acc-sello { display: none; }
+  .acc-panel { place-items: start center; margin-top: -26px; border-radius: 26px 26px 0 0; position: relative; padding: 34px 22px calc(28px + env(safe-area-inset-bottom)); box-shadow: 0 -10px 30px rgba(21,20,15,.06); }
+  .acc-logo { height: 38px; margin-bottom: 26px; }
+  .acceso-caja h1 { font-size: 27px; }
+  .acc-pie { margin-top: 28px; }
+}
 
 /* Botón de la cuenta en la barra */
 .yo-btn { display: inline-flex; align-items: center; gap: 9px; height: 38px; padding: 0 12px 0 4px; border: 0; border-radius: var(--r-pill); background: var(--surface); box-shadow: var(--sh-card); font: 600 13.5px/1 var(--sans); color: var(--ink); }
@@ -377,7 +462,86 @@ body:not([data-estado="portal"]) #yo-btn { display: none; }
 <main>
   <div class="wrap">
 <section class="acceso" id="acceso" aria-live="polite">
-  <div class="acceso-caja" id="acceso-caja"></div>
+  <div class="acc-escena">
+    <span class="acc-sello">Lucciano's · Administración y Finanzas</span>
+    <svg class="acc-svg hel" id="hel" viewBox="0 0 360 560" role="img" aria-label="Un helado de Lucciano's">
+  <defs>
+    <clipPath id="clipCono"><path d="M106 300 L254 300 L189 506 Q180 520 171 506 Z"/></clipPath>
+  </defs>
+  <ellipse cx="180" cy="532" rx="74" ry="8" fill="#15140f" opacity=".07"/>
+  <ellipse class="charco" cx="98" cy="533" rx="15" ry="4" fill="#8b5a3b" opacity=".85"/>
+  <g class="hel-tilt" id="hel-tilt"><g class="hel-idle"><g class="hel-salto">
+    <g class="cono">
+      <path d="M106 300 L254 300 L189 506 Q180 520 171 506 Z" fill="#e8b56c"/>
+      <g clip-path="url(#clipCono)" stroke="#c98f45" stroke-width="3" opacity=".55">
+        <path d="M-40 290 l140 230"/><path d="M-16 290 l140 230"/><path d="M8 290 l140 230"/><path d="M32 290 l140 230"/><path d="M56 290 l140 230"/><path d="M80 290 l140 230"/><path d="M104 290 l140 230"/><path d="M128 290 l140 230"/><path d="M152 290 l140 230"/><path d="M176 290 l140 230"/><path d="M200 290 l140 230"/><path d="M224 290 l140 230"/><path d="M248 290 l140 230"/><path d="M272 290 l140 230"/><path d="M296 290 l140 230"/>
+        <path d="M60 290 l-140 230"/><path d="M84 290 l-140 230"/><path d="M108 290 l-140 230"/><path d="M132 290 l-140 230"/><path d="M156 290 l-140 230"/><path d="M180 290 l-140 230"/><path d="M204 290 l-140 230"/><path d="M228 290 l-140 230"/><path d="M252 290 l-140 230"/><path d="M276 290 l-140 230"/><path d="M300 290 l-140 230"/><path d="M324 290 l-140 230"/><path d="M348 290 l-140 230"/><path d="M372 290 l-140 230"/><path d="M396 290 l-140 230"/>
+      </g>
+      <path d="M106 300 L254 300 L189 506 Q180 520 171 506 Z" fill="none" stroke="#c98f45" stroke-width="2" opacity=".35"/>
+      <rect x="98" y="288" width="164" height="24" rx="12" fill="#dc9f52"/>
+      <rect x="104" y="292" width="152" height="5" rx="2.5" fill="#fff" opacity=".22"/>
+    </g>
+    <g class="bocha b1">
+      <path class="gotera" style="--d:5.2s;--s:1.5;--dl:0s" fill="#8b5a3b" d="M97.5 294 h13 v34 a6.5 6.5 0 0 1 -13 0 Z"/>
+      <path class="gotera" style="--d:6.4s;--s:1.25;--dl:-1.3s" fill="#8b5a3b" d="M138.5 298 h15 v40 a7.5 7.5 0 0 1 -15 0 Z"/>
+      <path class="gotera" style="--d:4.6s;--s:1.45;--dl:-2.1s" fill="#8b5a3b" d="M215.5 298 h13 v22 a6.5 6.5 0 0 1 -13 0 Z"/>
+      <circle class="gota" cx="104" cy="336" r="6" fill="#8b5a3b"/>
+      <path d="M92.0 290.0 A88 81.0 0 0 1 268.0 290.0 Q250.4 309.8 232.8 290.0 Q215.2 315.3 197.6 290.0 Q180.0 309.8 162.4 290.0 Q144.8 315.3 127.2 290.0 Q109.6 309.8 92.0 290.0 Z" fill="#8b5a3b"/>
+      <path d="M94.0 295.0 A86 79.1 0 0 1 266.0 295.0 Q248.8 311.2 231.6 295.0 Q214.4 315.7 197.2 295.0 Q180.0 311.2 162.8 295.0 Q145.6 315.7 128.4 295.0 Q111.2 311.2 94.0 295.0 Z" fill="#6f452c" opacity=".35" transform="translate(0 4)"/>
+      <path d="M120.5 270.1 A63.4 58.3 0 0 1 158.3 235.2" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".2"/>
+    </g>
+    <g class="bocha b2">
+      <path class="gotera" style="--d:5.8s;--s:1.4;--dl:-0.7s" fill="#f4a6b3" d="M143.5 214 h13 v26 a6.5 6.5 0 0 1 -13 0 Z"/>
+      <path class="gotera" style="--d:4.9s;--s:1.5;--dl:-2.6s" fill="#f4a6b3" d="M206.5 216 h11 v16 a5.5 5.5 0 0 1 -11 0 Z"/>
+      <path d="M106.0 208.0 A74 68.1 0 0 1 254.0 208.0 Q239.2 227.8 224.4 208.0 Q209.6 233.3 194.8 208.0 Q180.0 227.8 165.2 208.0 Q150.4 233.3 135.6 208.0 Q120.8 227.8 106.0 208.0 Z" fill="#f4a6b3"/>
+      <path d="M129.9 191.2 A53.3 49.0 0 0 1 161.8 161.9" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".45"/>
+      <g class="cara">
+        <ellipse cx="146" cy="205" rx="9" ry="5.5" fill="#e38898" opacity=".55"/>
+        <ellipse cx="214" cy="205" rx="9" ry="5.5" fill="#e38898" opacity=".55"/>
+        <g class="ojos-abiertos"><g class="parpadeo"><g class="pupilas" id="pupilas">
+          <ellipse cx="162" cy="188" rx="5.6" ry="7" fill="#2a1d18"/>
+          <ellipse cx="198" cy="188" rx="5.6" ry="7" fill="#2a1d18"/>
+          <circle cx="164" cy="185" r="1.9" fill="#fff"/>
+          <circle cx="200" cy="185" r="1.9" fill="#fff"/>
+        </g></g></g>
+        <g class="ojos-cerrados" fill="none" stroke="#2a1d18" stroke-width="3" stroke-linecap="round">
+          <path d="M155 188 q7 6 14 0"/><path d="M191 188 q7 6 14 0"/>
+        </g>
+        <g class="ojo-espia">
+          <path d="M155 188 q7 6 14 0" fill="none" stroke="#2a1d18" stroke-width="3" stroke-linecap="round"/>
+          <ellipse cx="198" cy="188" rx="5.6" ry="7" fill="#2a1d18"/><circle cx="200" cy="185" r="1.9" fill="#fff"/>
+        </g>
+        <path class="boca-feliz" d="M172 202 q8 8 16 0" fill="none" stroke="#2a1d18" stroke-width="3" stroke-linecap="round"/>
+        <path class="boca-triste" d="M172 209 q8 -7 16 0" fill="none" stroke="#2a1d18" stroke-width="3" stroke-linecap="round"/>
+      </g>
+    </g>
+    <g class="bocha b3">
+      <path class="gotera" style="--d:6.1s;--s:1.4;--dl:-1.9s" fill="#bcd38e" d="M190.5 142 h11 v18 a5.5 5.5 0 0 1 -11 0 Z"/>
+      <path d="M120.0 136.0 A60 55.2 0 0 1 240.0 136.0 Q228.0 155.8 216.0 136.0 Q204.0 161.3 192.0 136.0 Q180.0 155.8 168.0 136.0 Q156.0 161.3 144.0 136.0 Q132.0 155.8 120.0 136.0 Z" fill="#bcd38e"/>
+      <path d="M139.4 122.4 A43.2 39.7 0 0 1 165.2 98.7" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity=".4"/>
+      <g class="granas">
+        <rect x="160" y="96" width="12" height="4.5" rx="2.25" fill="#fff" transform="rotate(-25 166 98)"/>
+        <rect x="186" y="88" width="12" height="4.5" rx="2.25" fill="#f2c94c" transform="rotate(20 192 90)"/>
+        <rect x="208" y="104" width="12" height="4.5" rx="2.25" fill="#6fa8dc" transform="rotate(-50 214 106)"/>
+        <rect x="144" y="114" width="12" height="4.5" rx="2.25" fill="#f4a6b3" transform="rotate(40 150 116)"/>
+        <rect x="176" y="110" width="12" height="4.5" rx="2.25" fill="#fff" transform="rotate(70 182 112)"/>
+        <rect x="200" y="122" width="12" height="4.5" rx="2.25" fill="#f2c94c" transform="rotate(-10 206 124)"/>
+        <rect x="132" y="130" width="12" height="4.5" rx="2.25" fill="#6fa8dc" transform="rotate(15 138 132)"/>
+        <rect x="222" y="132" width="12" height="4.5" rx="2.25" fill="#fff" transform="rotate(35 228 134)"/>
+      </g>
+    </g>
+    <g id="chispas"></g>
+  </g></g></g>
+</svg>
+    <p class="acc-lema">Herramientas<br><span>hechas en casa.</span></p>
+  </div>
+  <div class="acc-panel">
+    <div class="acc-form">
+      <img class="acc-logo" id="acc-logo" alt="Lucciano's">
+      <div class="acceso-caja" id="acceso-caja"></div>
+      <p class="acc-pie">¿Problemas para entrar? Escribile a Administración.</p>
+    </div>
+  </div>
 </section>
 
   <div id="portal">
@@ -754,13 +918,116 @@ const fecha = s => s ? new Date(s.replace(' ', 'T') + 'Z').toLocaleDateString('e
 async function enviando(form, fn) {
   const btn = form.querySelector('button[type=submit]'), msg = form.querySelector('.msg');
   msg.textContent = ''; msg.classList.remove('ok'); btn.disabled = true;
-  try { await fn(msg); } catch (e) { msg.textContent = e.message; } finally { btn.disabled = false; }
+  const conSpin = btn.querySelector('.fl'), antes = conSpin ? btn.innerHTML : '';
+  if (conSpin) btn.innerHTML = '<span class="spin" aria-hidden="true"></span><span>Un momento…</span>';
+  let ok = true;
+  try { await fn(msg); } catch (e) { msg.textContent = e.message; ok = false; }
+  finally { btn.disabled = false; if (conSpin && btn.isConnected) btn.innerHTML = antes; }
+  return ok;
 }
 
 function claveRepetida(f) {
   if (f.nueva.value !== f.repetir.value) throw new Error('Las dos contraseñas no coinciden');
   return f.nueva.value;
 }
+
+/* ---------- El helado del login ----------
+   Sigue el mouse (con resorte), mira el mail mientras escribís, cierra los ojos con la contraseña,
+   espía si mostrás la contraseña, se pone triste con un error y salta al entrar. */
+const helado = (() => {
+  const hel = $('#hel'), tilt = $('#hel-tilt'), pup = $('#pupilas');
+  const st = { tx: 0, ty: 0, x: 0, y: 0, vx: 0, vy: 0, rot: 0, vr: 0, trot: 0, corriendo: false };
+  let mirando = null; // input que el helado está mirando
+  const reducido = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function objetivo(px, py) {
+    const r = hel.getBoundingClientRect();
+    const cx = r.left + r.width / 2, cy = r.top + r.height * 0.34;
+    const dx = px - cx, dy = py - cy, dist = Math.hypot(dx, dy) || 1;
+    const k = Math.min(1, dist / 260);
+    st.tx = dx / dist * 4.2 * k; st.ty = dy / dist * 3.4 * k;
+    st.trot = Math.max(-3.5, Math.min(3.5, dx / innerWidth * 6));
+  }
+  function paso() {
+    // resorte simple (stiffness/damping) -> se siente vivo y es interrumpible
+    const K = 0.09, D = 0.74;
+    st.vx = (st.vx + (st.tx - st.x) * K) * D; st.x += st.vx;
+    st.vy = (st.vy + (st.ty - st.y) * K) * D; st.y += st.vy;
+    st.vr = (st.vr + (st.trot - st.rot) * 0.05) * 0.82; st.rot += st.vr;
+    pup.setAttribute('transform', `translate(${st.x.toFixed(2)} ${st.y.toFixed(2)})`);
+    tilt.style.transform = `rotate(${st.rot.toFixed(2)}deg)`;
+    if (document.body.dataset.estado === 'acceso') requestAnimationFrame(paso); else st.corriendo = false;
+  }
+  function arrancar() { if (reducido || st.corriendo) return; st.corriendo = true; requestAnimationFrame(paso); }
+
+  addEventListener('pointermove', e => { if (!mirando && document.body.dataset.estado === 'acceso') objetivo(e.clientX, e.clientY); }, { passive: true });
+
+  // Mira el texto que vas escribiendo en el mail
+  function mirarInput(inp) {
+    const r = inp.getBoundingClientRect();
+    const largo = Math.min(inp.value.length * 8.5, r.width - 30);
+    objetivo(r.left + 16 + largo, r.top + r.height / 2);
+  }
+  const acc = $('#acceso');
+  acc.addEventListener('focusin', e => {
+    const inp = e.target.closest('input');
+    if (!inp) return;
+    const clave = inp.dataset.ojo && inp.type === 'password';
+    hel.classList.toggle('cierra', !!clave);
+    hel.classList.toggle('espia', !!inp.dataset.ojo && inp.type === 'text');
+    mirando = inp; mirarInput(inp);
+  });
+  acc.addEventListener('focusout', () => {
+    setTimeout(() => {
+      if (acc.contains(document.activeElement) && document.activeElement.matches('input')) return;
+      hel.classList.remove('cierra', 'espia'); mirando = null;
+    }, 0);
+  });
+  acc.addEventListener('input', e => { if (e.target === mirando) mirarInput(e.target); });
+  // El ojito de la contraseña: si la mostrás, espía con un ojo
+  acc.addEventListener('click', e => {
+    if (!e.target.closest('.ojo')) return;
+    const inp = e.target.closest('.campo').querySelector('input');
+    hel.classList.toggle('espia', inp.type === 'text');
+    hel.classList.toggle('cierra', inp.type === 'password');
+  });
+
+  function triste() {
+    hel.classList.remove('festeja', 'triste'); void hel.offsetWidth;
+    hel.classList.add('triste');
+    const f = $('.acc-form'); f.classList.remove('sacude'); void f.offsetWidth; f.classList.add('sacude');
+    clearTimeout(triste.t); triste.t = setTimeout(() => hel.classList.remove('triste'), 2600);
+  }
+  function festeja() {
+    hel.classList.remove('triste', 'cierra', 'espia'); void hel.offsetWidth;
+    hel.classList.add('festeja');
+    if (reducido) return Promise.resolve();
+    // chispitas de colores (granas) que saltan del cucurucho
+    const g = $('#chispas'), colores = ['#f2c94c', '#6fa8dc', '#f4a6b3', '#bcd38e', '#ffffff', '#8b5a3b'];
+    g.innerHTML = '';
+    for (let i = 0; i < 18; i++) {
+      const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      const ang = (-160 + Math.random() * 140) * Math.PI / 180, v = 70 + Math.random() * 90;
+      r.setAttribute('x', 174); r.setAttribute('y', 92); r.setAttribute('width', 12); r.setAttribute('height', 4.5); r.setAttribute('rx', 2.25);
+      r.setAttribute('fill', colores[i % colores.length]);
+      g.appendChild(r);
+      r.animate([
+        { transform: 'translate(0,0) rotate(0deg)', opacity: 1 },
+        { transform: `translate(${Math.cos(ang) * v}px, ${Math.sin(ang) * v + 40}px) rotate(${Math.random() * 540 - 270}deg)`, opacity: 0 }
+      ], { duration: 700 + Math.random() * 250, easing: 'cubic-bezier(.16,1,.3,1)', fill: 'forwards' });
+    }
+    return new Promise(res => setTimeout(res, 650));
+  }
+  function armar() {
+    const s = $('#acceso');
+    s.classList.add('armando');
+    setTimeout(() => s.classList.remove('armando'), 1300);
+    arrancar();
+  }
+  return { triste, festeja, armar, arrancar };
+})();
+
+$('#acc-logo').src = $('.brand img').src;
 
 /* ---------- Pantallas de ingreso ---------- */
 const CAMPOS_CLAVE = `
@@ -793,18 +1060,21 @@ function ocultarClaves(raiz) {
   raiz.querySelectorAll('input[data-ojo]').forEach(inp => { inp.type = 'password'; inp.nextElementSibling?.pintar?.(); });
 }
 
+let accesoArmado = false;
 function mostrarAcceso(modo, extra = {}) {
+  const yaEstaba = document.body.dataset.estado === 'acceso';
   document.body.dataset.estado = 'acceso';
+  if (!accesoArmado) { accesoArmado = true; helado.armar(); } else if (!yaEstaba) helado.arrancar();
   const caja = $('#acceso-caja');
   const vistas = {
     login: `
-      <h1>Ingresá</h1>
-      <p class="sub">Con tu mail y tu contraseña. Es la misma para todas las herramientas.</p>
+      <h1>Hola de nuevo</h1>
+      <p class="sub">Entrá con tu mail y tu contraseña. Es la misma para todas las herramientas.</p>
       <form data-form="login" novalidate>
         <label class="campo"><span>Mail</span><input name="email" type="email" autocomplete="username" inputmode="email" required value="${esc(extra.email || '')}"></label>
         <label class="campo"><span>Contraseña</span><input name="clave" type="password" autocomplete="current-password" required></label>
         <p class="msg" role="alert">${esc(extra.msg || '')}</p>
-        <button class="btn" type="submit">Ingresar</button>
+        <button class="btn" type="submit"><span>Ingresar</span><svg class="i fl" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
       </form>
       <button class="lnk" type="button" data-ir="olvide">Me olvidé la contraseña</button>`,
     olvide: `
@@ -813,7 +1083,7 @@ function mostrarAcceso(modo, extra = {}) {
       <form data-form="olvide" novalidate>
         <label class="campo"><span>Mail</span><input name="email" type="email" autocomplete="username" inputmode="email" required value="${esc(extra.email || '')}"></label>
         <p class="msg" role="alert"></p>
-        <button class="btn" type="submit">Mandarme el link</button>
+        <button class="btn" type="submit"><span>Mandarme el link</span><svg class="i fl" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
       </form>
       <button class="lnk" type="button" data-ir="login">Volver a ingresar</button>`,
     clave: `
@@ -821,14 +1091,14 @@ function mostrarAcceso(modo, extra = {}) {
       <p class="sub">Al menos 8 caracteres, con letras y números. Vas a usarla en todas las herramientas.</p>
       <form data-form="clave" novalidate>${CAMPOS_CLAVE}
         <p class="msg" role="alert"></p>
-        <button class="btn" type="submit">Guardar y entrar</button>
+        <button class="btn" type="submit"><span>Guardar y entrar</span><svg class="i fl" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
       </form>`,
     cambiar: `
       <h1>Cambiá tu contraseña</h1>
       <p class="sub">Es tu primer ingreso. Elegí una contraseña propia: al menos 8 caracteres, con letras y números.</p>
       <form data-form="cambiar" novalidate>${CAMPOS_CLAVE}
         <p class="msg" role="alert"></p>
-        <button class="btn" type="submit">Guardar y entrar</button>
+        <button class="btn" type="submit"><span>Guardar y entrar</span><svg class="i fl" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
       </form>`
   };
   caja.innerHTML = vistas[modo];
@@ -849,6 +1119,7 @@ $('#acceso').addEventListener('submit', e => {
   enviando(f, async msg => {
     if (modo === 'login') {
       const r = await api('/login', { metodo: 'POST', datos: { email: f.email.value, clave: f.clave.value } });
+      await helado.festeja();
       entrar(r);
     } else if (modo === 'olvide') {
       const r = await api('/olvide', { metodo: 'POST', datos: { email: f.email.value } });
@@ -861,9 +1132,10 @@ $('#acceso').addEventListener('submit', e => {
     } else if (modo === 'cambiar') {
       await api('/cambiar-clave', { metodo: 'POST', datos: { nueva: claveRepetida(f) } });
       yo.debe_cambiar_clave = false;
+      await helado.festeja();
       mostrarPortal();
     }
-  });
+  }).then(ok => { if (!ok) helado.triste(); });
 });
 
 function entrar(datos) {
