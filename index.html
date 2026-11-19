@@ -1014,7 +1014,7 @@ const ID_ACCESO = {
 };
 // Apps que ya usan el login único: al abrirlas, el portal les pasa el acceso.
 // Se suman de a una a medida que se migran (ej: ['asientos']). Las demás se abren como siempre.
-const CON_LOGIN_UNICO = [];
+const CON_LOGIN_UNICO = ['asientos'];
 const ROL_NOMBRE = { carga: 'Carga', aprobador: 'Aprobador', admin: 'Admin', solo_escaneo: 'Solo escaneo', supervisor: 'Supervisor', jefe: 'Jefe', consulta: 'Consulta', editor: 'Editor' };
 const EXTRA_NOMBRE = { director: 'Director (aprueba lotes de pago)' };
 APPS_TODAS.forEach(a => { a.acceso = ID_ACCESO[a.repo] || null; });
