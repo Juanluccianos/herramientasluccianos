@@ -262,13 +262,14 @@ body[data-estado="acceso"] { overflow: hidden; }
 
 .acceso { position: fixed; inset: 0; z-index: 30; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(420px, 1fr); background: var(--surface); overflow-y: auto; }
 
-/* Escena */
-.acc-escena { position: relative; overflow: hidden; background: #f3e7d3; display: grid; place-items: center; min-height: 100dvh; }
-.acc-escena::before { content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -58%); width: min(70vh, 80%); aspect-ratio: 1; border-radius: 50%; background: #faf3e7; box-shadow: 0 0 0 28px rgba(250,243,231,.45), 0 0 0 64px rgba(250,243,231,.22); }
-.acc-svg { position: relative; height: min(72vh, 660px); width: auto; max-width: 80%; margin-bottom: 9vh; overflow: visible; }
-.acc-lema { position: absolute; left: clamp(28px, 4vw, 56px); bottom: clamp(26px, 4vh, 48px); margin: 0; font: 800 clamp(26px, 2.6vw, 38px)/1.02 var(--display); letter-spacing: -.035em; color: var(--ink); }
-.acc-lema span { color: #9a6b3c; }
-.acc-sello { position: absolute; left: clamp(28px, 4vw, 56px); top: clamp(26px, 4vh, 44px); font: 600 13px/1 var(--sans); color: #8a7a62; }
+/* Escena: chocolate oscuro con un brillo cálido, las paletas como protagonistas */
+.acc-escena { position: relative; overflow: hidden; display: grid; place-items: center; min-height: 100dvh;
+  background: radial-gradient(62% 52% at 50% 44%, #34302b 0%, #262422 52%, #1b1a19 100%); }
+.acc-escena::before { content: ""; position: absolute; inset: 0; background: radial-gradient(40% 32% at 50% 40%, rgba(255,222,180,.13), transparent 70%); pointer-events: none; }
+.acc-svg { position: relative; height: min(70vh, 640px); width: auto; max-width: 84%; margin-bottom: 8vh; overflow: visible; }
+.acc-lema { position: absolute; left: clamp(28px, 4vw, 56px); bottom: clamp(26px, 4vh, 48px); margin: 0; font: 800 clamp(26px, 2.6vw, 38px)/1.02 var(--display); letter-spacing: -.035em; color: #f6efe6; }
+.acc-lema span { color: #c2d690; }
+.acc-sello { position: absolute; left: clamp(28px, 4vw, 56px); top: clamp(26px, 4vh, 44px); font: 600 13px/1 var(--sans); color: rgba(246,239,230,.6); }
 
 /* Panel del formulario */
 .acc-panel { display: grid; place-items: center; padding: 48px clamp(24px, 5vw, 72px); background: var(--surface); }
@@ -309,54 +310,56 @@ body[data-estado="acceso"] { overflow: hidden; }
 .acc-form.sacude { animation: sacude .42s var(--ease); }
 @keyframes sacude { 15% { transform: translateX(-7px); } 35% { transform: translateX(6px); } 55% { transform: translateX(-4px); } 75% { transform: translateX(2px); } }
 
-/* ---------- El helado ---------- */
-.hel .gotera, .hel .gota, .hel .charco, .hel .parpadeo, .hel .bocha, .hel .cono, .hel .granas, .hel-idle, .hel-salto { transform-box: fill-box; }
-.hel-tilt { transform-origin: 180px 505px; transform-box: view-box; }
-.hel-idle { transform-origin: 50% 100%; animation: flota 6.2s cubic-bezier(.45,0,.55,1) infinite; }
-@keyframes flota { 0%, 100% { transform: translateY(0) rotate(-1.2deg); } 50% { transform: translateY(-7px) rotate(1.2deg); } }
+/* ---------- Las paletas ---------- */
+.pal-svg .pal, .pal-svg .pal-in, .pal-svg .pal-salto, .pal-svg .gotera, .pal-svg .gota, .pal-svg .charco { transform-box: fill-box; }
+.pal { transform-origin: 50% 100%; }
+.p-izq { transform: rotate(var(--ang)); }
+.p-der { transform: rotate(var(--ang)); }
+.pal-in { transform-origin: 50% 100%; animation: flota 6.4s cubic-bezier(.45,0,.55,1) infinite; }
+.p-izq .pal-in { animation-duration: 7.3s; animation-delay: -2.2s; }
+.p-der .pal-in { animation-duration: 6.9s; animation-delay: -4.1s; }
+@keyframes flota { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 .gotera { transform-origin: 50% 0; animation: derrite var(--d, 5s) cubic-bezier(.45,0,.55,1) infinite; animation-delay: var(--dl, 0s); }
 @keyframes derrite { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(var(--s, 1.35)); } }
-.gota { animation: cae 5.6s infinite; animation-delay: 1.8s; opacity: 0; }
+.gota { animation: cae 6.2s infinite; animation-delay: 2s; opacity: 0; }
 @keyframes cae {
   0% { opacity: 0; transform: translateY(0) scale(.3); }
   8% { opacity: 1; }
   55% { opacity: 1; transform: translateY(0) scale(1); animation-timing-function: cubic-bezier(.55,0,1,.45); }
-  72% { opacity: 1; transform: translateY(192px) scale(.9, 1.15); }
-  73%, 100% { opacity: 0; transform: translateY(192px) scale(1); }
+  72% { opacity: 1; transform: translateY(244px) scale(.9, 1.15); }
+  73%, 100% { opacity: 0; transform: translateY(244px) scale(1); }
 }
-.charco { transform-origin: 50% 50%; animation: charco 5.6s infinite; animation-delay: 1.8s; }
-@keyframes charco { 0%, 71% { transform: scale(1); } 76% { transform: scale(1.35, 1.2); } 100% { transform: scale(1); } }
-.ojos-abiertos, .ojos-cerrados, .ojo-espia, .boca-triste { transition: opacity .15s var(--ease); }
-.ojos-cerrados, .ojo-espia, .boca-triste { opacity: 0; }
-.parpadeo { transform-origin: 50% 50%; animation: parpadea 4.7s infinite; }
-@keyframes parpadea { 0%, 94%, 100% { transform: scaleY(1); } 96.5% { transform: scaleY(.1); } }
-.pupilas { transition: transform .12s linear; }
-.hel.cierra .ojos-abiertos { opacity: 0; } .hel.cierra .ojos-cerrados { opacity: 1; }
-.hel.espia .ojos-abiertos { opacity: 0; } .hel.espia .ojos-cerrados { opacity: 0; } .hel.espia .ojo-espia { opacity: 1; }
-.hel.triste .boca-feliz { opacity: 0; } .hel.triste .boca-triste { opacity: 1; }
-.hel.triste .gotera { --d: 1.6s !important; }
-.hel-salto { transform-origin: 50% 100%; }
-.hel.festeja .hel-salto { animation: salto .7s cubic-bezier(.34,1.56,.64,1); }
-@keyframes salto { 0% { transform: translateY(0) scale(1); } 22% { transform: translateY(6px) scale(1.04, .95); } 55% { transform: translateY(-26px) scale(.98, 1.03); } 100% { transform: translateY(0) scale(1); } }
-.hel.triste .hel-salto { animation: no .5s var(--ease); }
+.charco { transform-origin: 50% 50%; animation: charco 6.2s infinite; animation-delay: 2s; }
+@keyframes charco { 0%, 71% { transform: scale(1); } 76% { transform: scale(1.4, 1.25); } 100% { transform: scale(1); } }
+/* Reflejo de luz que cruza el chocolate cada tanto */
+.brillo { animation: brillo 7s cubic-bezier(.45,0,.55,1) infinite 1.4s; }
+@keyframes brillo { 0%, 62% { transform: translateX(0); } 100% { transform: translateX(260px); } }
+.brillo { transform-box: view-box; }
+/* Reacciones */
+.pal-salto { transform-origin: 50% 100%; }
+.hel.triste .pal-salto { animation: no .5s var(--ease); }
 @keyframes no { 20% { transform: rotate(-4deg); } 45% { transform: rotate(3.5deg); } 70% { transform: rotate(-2deg); } }
+.hel.triste .p-izq .pal-in, .hel.triste .p-der .pal-in { animation: flota 6.4s cubic-bezier(.45,0,.55,1) infinite, no .5s var(--ease); }
+.hel.festeja .pal-salto { animation: salto .6s cubic-bezier(.34,1.56,.64,1); }
+@keyframes salto { 0% { transform: none; } 30% { transform: translateY(5px) scale(1.02, .97); } 60% { transform: translateY(-12px); } 100% { transform: none; } }
+.hel.cierra .p-izq { transform: rotate(-4deg) translateX(40px); }
+.hel.cierra .p-der { transform: rotate(4deg) translateX(-40px); }
+.p-izq, .p-der { transition: transform .45s var(--ease-out); }
 
-/* Entrada: se arma el cucurucho (una vez por sesión) */
-.armando .cono { animation: entraCono .55s var(--ease-out) both; }
-.armando .bocha { animation: plop .6s cubic-bezier(.34,1.56,.64,1) both; }
-.armando .b1 { animation-delay: .16s; } .armando .b2 { animation-delay: .3s; } .armando .b3 { animation-delay: .42s; }
-.armando .granas { animation: aparece .4s var(--ease-out) .72s both; }
+/* Entrada: las paletas suben y se abren en abanico (una vez por sesión) */
+.armando .p-cen { animation: sube .7s var(--ease-out) .05s both; }
+.armando .p-izq { animation: abreI .8s cubic-bezier(.34,1.4,.64,1) .2s both; }
+.armando .p-der { animation: abreD .8s cubic-bezier(.34,1.4,.64,1) .28s both; }
 .armando .acc-form { animation: entraForm .55s var(--ease-out) .08s both; }
 .armando .acc-lema { animation: entraForm .6s var(--ease-out) .5s both; }
-@keyframes entraCono { from { opacity: 0; transform: translateY(26px); } }
-@keyframes plop { from { opacity: 0; transform: translateY(-90px); } 60% { opacity: 1; } }
-@keyframes aparece { from { opacity: 0; transform: scale(.6); } }
+@keyframes sube { from { opacity: 0; transform: translateY(60px); } }
+@keyframes abreI { from { opacity: 0; transform: rotate(0deg) translateY(30px); } }
+@keyframes abreD { from { opacity: 0; transform: rotate(0deg) translateY(30px); } }
 @keyframes entraForm { from { opacity: 0; transform: translateY(10px); } }
 
 @media (max-width: 900px) {
   .acceso { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
   .acc-escena { min-height: 0; height: 40dvh; min-height: 300px; }
-  .acc-escena::before { width: min(62vw, 330px); transform: translate(-50%, -50%); }
   .acc-svg { width: auto; height: 86%; margin: 0; }
   .acc-lema, .acc-sello { display: none; }
   .acc-panel { place-items: start center; margin-top: -26px; border-radius: 26px 26px 0 0; position: relative; padding: 34px 22px calc(28px + env(safe-area-inset-bottom)); box-shadow: 0 -10px 30px rgba(21,20,15,.06); }
@@ -576,77 +579,50 @@ button.fila:hover .chev { transform: translateX(2px); }
   <div class="wrap">
 <section class="acceso" id="acceso" aria-live="polite">
   <div class="acc-escena">
-    <span class="acc-sello">Lucciano's · Administración y Finanzas</span>
-    <svg class="acc-svg hel" id="hel" viewBox="0 0 360 560" role="img" aria-label="Un helado de Lucciano's">
-  <defs>
-    <clipPath id="clipCono"><path d="M106 300 L254 300 L189 506 Q180 520 171 506 Z"/></clipPath>
-  </defs>
-  <ellipse cx="180" cy="532" rx="74" ry="8" fill="#15140f" opacity=".07"/>
-  <ellipse class="charco" cx="98" cy="533" rx="15" ry="4" fill="#8b5a3b" opacity=".85"/>
-  <g class="hel-tilt" id="hel-tilt"><g class="hel-idle"><g class="hel-salto">
-    <g class="cono">
-      <path d="M106 300 L254 300 L189 506 Q180 520 171 506 Z" fill="#e8b56c"/>
-      <g clip-path="url(#clipCono)" stroke="#c98f45" stroke-width="3" opacity=".55">
-        <path d="M-40 290 l140 230"/><path d="M-16 290 l140 230"/><path d="M8 290 l140 230"/><path d="M32 290 l140 230"/><path d="M56 290 l140 230"/><path d="M80 290 l140 230"/><path d="M104 290 l140 230"/><path d="M128 290 l140 230"/><path d="M152 290 l140 230"/><path d="M176 290 l140 230"/><path d="M200 290 l140 230"/><path d="M224 290 l140 230"/><path d="M248 290 l140 230"/><path d="M272 290 l140 230"/><path d="M296 290 l140 230"/>
-        <path d="M60 290 l-140 230"/><path d="M84 290 l-140 230"/><path d="M108 290 l-140 230"/><path d="M132 290 l-140 230"/><path d="M156 290 l-140 230"/><path d="M180 290 l-140 230"/><path d="M204 290 l-140 230"/><path d="M228 290 l-140 230"/><path d="M252 290 l-140 230"/><path d="M276 290 l-140 230"/><path d="M300 290 l-140 230"/><path d="M324 290 l-140 230"/><path d="M348 290 l-140 230"/><path d="M372 290 l-140 230"/><path d="M396 290 l-140 230"/>
+    <span class="acc-sello">#ILMAESTRODELGELATO · Administración y Finanzas</span>
+    <svg class="acc-svg pal-svg hel" id="hel" viewBox="0 0 420 560" role="img" aria-label="Paletas de Lucciano's">
+  <defs><linearGradient id="gBrillo" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+  <radialGradient id="gSombra"><stop offset="0" stop-color="#000" stop-opacity=".45"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient></defs>
+  <ellipse cx="210" cy="530" rx="150" ry="16" fill="url(#gSombra)"/>
+  <ellipse class="charco" cx="216" cy="528" rx="14" ry="3.5" fill="#5c3826"/>
+  <g class="pal p-izq" style="--ang:-14deg"><g class="pal-in">
+      <rect x="101" y="350.6" width="22" height="92" rx="10" fill="#e2c08e"/><rect x="101" y="350.6" width="22" height="16" fill="#c9a26b" opacity=".45"/><path d="M109 372.6 v56" stroke="#c9a26b" stroke-width="1.5" stroke-linecap="round" opacity=".7"/>
+      <path d="M56.199999999999996 223.8 A55.800000000000004 55.800000000000004 0 0 1 167.8 223.8 L167.8 344.6 Q167.8 360.6 151.8 360.6 L72.19999999999999 360.6 Q56.199999999999996 360.6 56.199999999999996 344.6 Z" fill="#f19aa9"/>
+      <clipPath id="clip-p-izq"><path d="M56.199999999999996 223.8 A55.800000000000004 55.800000000000004 0 0 1 167.8 223.8 L167.8 344.6 Q167.8 360.6 151.8 360.6 L72.19999999999999 360.6 Q56.199999999999996 360.6 56.199999999999996 344.6 Z"/></clipPath>
+      <g clip-path="url(#clip-p-izq)"><path d="M42 188 q 28 -14 56 0 t 56 0 t 56 0" fill="none" stroke="#fbf3ea" stroke-width="5" stroke-linecap="round"/><path d="M42 214 q 28 -14 56 0 t 56 0 t 56 0" fill="none" stroke="#fbf3ea" stroke-width="5" stroke-linecap="round"/><path d="M42 240 q 28 -14 56 0 t 56 0 t 56 0" fill="none" stroke="#fbf3ea" stroke-width="5" stroke-linecap="round"/><path d="M42 266 q 28 -14 56 0 t 56 0 t 56 0" fill="none" stroke="#fbf3ea" stroke-width="5" stroke-linecap="round"/><path d="M42 292 q 28 -14 56 0 t 56 0 t 56 0" fill="none" stroke="#fbf3ea" stroke-width="5" stroke-linecap="round"/><path d="M42 318 q 28 -14 56 0 t 56 0 t 56 0" fill="none" stroke="#fbf3ea" stroke-width="5" stroke-linecap="round"/><path d="M42 344 q 28 -14 56 0 t 56 0 t 56 0" fill="none" stroke="#fbf3ea" stroke-width="5" stroke-linecap="round"/>
+        <rect x="-12" y="148" width="34" height="278.2" fill="#fff" opacity=".12" transform="rotate(18 112 168)"/>
       </g>
-      <path d="M106 300 L254 300 L189 506 Q180 520 171 506 Z" fill="none" stroke="#c98f45" stroke-width="2" opacity=".35"/>
-      <rect x="98" y="288" width="164" height="24" rx="12" fill="#dc9f52"/>
-      <rect x="104" y="292" width="152" height="5" rx="2.5" fill="#fff" opacity=".22"/>
-    </g>
-    <g class="bocha b1">
-      <path class="gotera" style="--d:5.2s;--s:1.5;--dl:0s" fill="#8b5a3b" d="M97.5 294 h13 v34 a6.5 6.5 0 0 1 -13 0 Z"/>
-      <path class="gotera" style="--d:6.4s;--s:1.25;--dl:-1.3s" fill="#8b5a3b" d="M138.5 298 h15 v40 a7.5 7.5 0 0 1 -15 0 Z"/>
-      <path class="gotera" style="--d:4.6s;--s:1.45;--dl:-2.1s" fill="#8b5a3b" d="M215.5 298 h13 v22 a6.5 6.5 0 0 1 -13 0 Z"/>
-      <circle class="gota" cx="104" cy="336" r="6" fill="#8b5a3b"/>
-      <path d="M92.0 290.0 A88 81.0 0 0 1 268.0 290.0 Q250.4 309.8 232.8 290.0 Q215.2 315.3 197.6 290.0 Q180.0 309.8 162.4 290.0 Q144.8 315.3 127.2 290.0 Q109.6 309.8 92.0 290.0 Z" fill="#8b5a3b"/>
-      <path d="M94.0 295.0 A86 79.1 0 0 1 266.0 295.0 Q248.8 311.2 231.6 295.0 Q214.4 315.7 197.2 295.0 Q180.0 311.2 162.8 295.0 Q145.6 315.7 128.4 295.0 Q111.2 311.2 94.0 295.0 Z" fill="#6f452c" opacity=".35" transform="translate(0 4)"/>
-      <path d="M120.5 270.1 A63.4 58.3 0 0 1 158.3 235.2" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".2"/>
-    </g>
-    <g class="bocha b2">
-      <path class="gotera" style="--d:5.8s;--s:1.4;--dl:-0.7s" fill="#f4a6b3" d="M143.5 214 h13 v26 a6.5 6.5 0 0 1 -13 0 Z"/>
-      <path class="gotera" style="--d:4.9s;--s:1.5;--dl:-2.6s" fill="#f4a6b3" d="M206.5 216 h11 v16 a5.5 5.5 0 0 1 -11 0 Z"/>
-      <path d="M106.0 208.0 A74 68.1 0 0 1 254.0 208.0 Q239.2 227.8 224.4 208.0 Q209.6 233.3 194.8 208.0 Q180.0 227.8 165.2 208.0 Q150.4 233.3 135.6 208.0 Q120.8 227.8 106.0 208.0 Z" fill="#f4a6b3"/>
-      <path d="M129.9 191.2 A53.3 49.0 0 0 1 161.8 161.9" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".45"/>
-      <g class="cara">
-        <ellipse cx="146" cy="205" rx="9" ry="5.5" fill="#e38898" opacity=".55"/>
-        <ellipse cx="214" cy="205" rx="9" ry="5.5" fill="#e38898" opacity=".55"/>
-        <g class="ojos-abiertos"><g class="parpadeo"><g class="pupilas" id="pupilas">
-          <ellipse cx="162" cy="188" rx="5.6" ry="7" fill="#2a1d18"/>
-          <ellipse cx="198" cy="188" rx="5.6" ry="7" fill="#2a1d18"/>
-          <circle cx="164" cy="185" r="1.9" fill="#fff"/>
-          <circle cx="200" cy="185" r="1.9" fill="#fff"/>
-        </g></g></g>
-        <g class="ojos-cerrados" fill="none" stroke="#2a1d18" stroke-width="3" stroke-linecap="round">
-          <path d="M155 188 q7 6 14 0"/><path d="M191 188 q7 6 14 0"/>
-        </g>
-        <g class="ojo-espia">
-          <path d="M155 188 q7 6 14 0" fill="none" stroke="#2a1d18" stroke-width="3" stroke-linecap="round"/>
-          <ellipse cx="198" cy="188" rx="5.6" ry="7" fill="#2a1d18"/><circle cx="200" cy="185" r="1.9" fill="#fff"/>
-        </g>
-        <path class="boca-feliz" d="M172 202 q8 8 16 0" fill="none" stroke="#2a1d18" stroke-width="3" stroke-linecap="round"/>
-        <path class="boca-triste" d="M172 209 q8 -7 16 0" fill="none" stroke="#2a1d18" stroke-width="3" stroke-linecap="round"/>
+    </g></g><g class="pal p-der" style="--ang:14deg"><g class="pal-in">
+      <rect x="297" y="350.6" width="22" height="92" rx="10" fill="#e2c08e"/><rect x="297" y="350.6" width="22" height="16" fill="#c9a26b" opacity=".45"/><path d="M305 372.6 v56" stroke="#c9a26b" stroke-width="1.5" stroke-linecap="round" opacity=".7"/>
+      <path d="M252.2 223.8 A55.800000000000004 55.800000000000004 0 0 1 363.8 223.8 L363.8 344.6 Q363.8 360.6 347.8 360.6 L268.2 360.6 Q252.2 360.6 252.2 344.6 Z" fill="#d79a58"/>
+      <clipPath id="clip-p-der"><path d="M252.2 223.8 A55.800000000000004 55.800000000000004 0 0 1 363.8 223.8 L363.8 344.6 Q363.8 360.6 347.8 360.6 L268.2 360.6 Q252.2 360.6 252.2 344.6 Z"/></clipPath>
+      <g clip-path="url(#clip-p-der)"><path d="M238 182 q 28 12 56 0 t 56 0 t 56 0" fill="none" stroke="#4a2c1f" stroke-width="5" stroke-linecap="round"/><path d="M238 206 q 28 12 56 0 t 56 0 t 56 0" fill="none" stroke="#4a2c1f" stroke-width="5" stroke-linecap="round"/><path d="M238 230 q 28 12 56 0 t 56 0 t 56 0" fill="none" stroke="#4a2c1f" stroke-width="5" stroke-linecap="round"/><path d="M238 254 q 28 12 56 0 t 56 0 t 56 0" fill="none" stroke="#4a2c1f" stroke-width="5" stroke-linecap="round"/><path d="M238 278 q 28 12 56 0 t 56 0 t 56 0" fill="none" stroke="#4a2c1f" stroke-width="5" stroke-linecap="round"/><path d="M238 302 q 28 12 56 0 t 56 0 t 56 0" fill="none" stroke="#4a2c1f" stroke-width="5" stroke-linecap="round"/><path d="M238 326 q 28 12 56 0 t 56 0 t 56 0" fill="none" stroke="#4a2c1f" stroke-width="5" stroke-linecap="round"/>
+        <rect x="184" y="148" width="34" height="278.2" fill="#fff" opacity=".12" transform="rotate(18 308 168)"/>
       </g>
+    </g></g><g class="pal p-cen"><g class="pal-in"><g class="pal-salto">
+  <rect x="199" y="324" width="22" height="92" rx="10" fill="#e2c08e"/><rect x="199" y="324" width="22" height="16" fill="#c9a26b" opacity=".45"/><path d="M207 346 v56" stroke="#c9a26b" stroke-width="1.5" stroke-linecap="round" opacity=".7"/>
+  <mask id="mordida"><rect x="0" y="0" width="420" height="560" fill="#fff"/>
+    <g fill="#000" id="mordida-g"><circle class="mo" cx="256" cy="128" r="0"/><circle class="mo" cx="274" cy="154" r="0"/><circle class="mo" cx="238" cy="116" r="0"/></g>
+  </mask>
+  <g mask="url(#mordida)">
+    <path d="M148.0 182.0 A62.0 62.0 0 0 1 272.0 182.0 L272.0 318 Q272.0 334 256.0 334 L164.0 334 Q148.0 334 148.0 318 Z" fill="#c2d690"/>
+    <clipPath id="clip-cen"><path d="M148.0 182.0 A62.0 62.0 0 0 1 272.0 182.0 L272.0 318 Q272.0 334 256.0 334 L164.0 334 Q148.0 334 148.0 318 Z"/></clipPath>
+    <g clip-path="url(#clip-cen)">
+      <path d="M148.0 264 q 30 -6 62 0 t 62 0" fill="none" stroke="#adc57a" stroke-width="10" opacity=".5"/>
+      <path d="M144.0 110 L276.0 110 L276.0 224 Q261.2 231.2 248.4 224.0 Q235.6 235.7 222.8 224.0 Q210.0 231.2 197.2 224.0 Q184.4 235.7 171.6 224.0 Q158.8 231.2 146.0 224.0 L144.0 224 Z" fill="#4a2c1f"/>
+      <path d="M162.0 150 q 6 -22 30 -24" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".18"/>
+      <path d="M170 150 l6.0 -2.2 l1.0 4.2 l-5.4 1.7 Z" fill="#9fbe5f"/><path d="M196 138 l7.7 -1.9 l-0.7 5.3 l-6.3 2.1 Z" fill="#9fbe5f"/><path d="M228 146 l7.5 -2.4 l-0.3 5.9 l-4.2 2.2 Z" fill="#b8d27a"/><path d="M248 164 l5.1 -1.9 l0.7 4.4 l-5.7 2.1 Z" fill="#86a84a"/><path d="M180 178 l5.9 1.1 l-0.5 5.7 l-5.1 1.7 Z" fill="#86a84a"/><path d="M212 168 l7.1 -0.2 l0.9 5.5 l-5.4 2.6 Z" fill="#b8d27a"/><path d="M236 192 l6.8 -0.7 l-0.1 6.4 l-4.9 1.5 Z" fill="#86a84a"/><path d="M166 202 l5.9 -0.5 l0.0 5.3 l-5.2 1.1 Z" fill="#86a84a"/><path d="M202 200 l6.3 0.8 l-0.5 5.5 l-6.9 2.3 Z" fill="#86a84a"/><path d="M220 216 l6.7 1.4 l-0.1 6.1 l-5.2 2.2 Z" fill="#b8d27a"/><path d="M188 160 l5.2 -2.5 l-0.2 6.1 l-6.8 2.5 Z" fill="#b8d27a"/><path d="M250 208 l6.9 2.0 l1.5 4.9 l-5.8 2.3 Z" fill="#9fbe5f"/>
+      <rect class="brillo" x="58.0" y="90" width="36" height="274" fill="url(#gBrillo)" transform="rotate(16 210 120)"/>
     </g>
-    <g class="bocha b3">
-      <path class="gotera" style="--d:6.1s;--s:1.4;--dl:-1.9s" fill="#bcd38e" d="M190.5 142 h11 v18 a5.5 5.5 0 0 1 -11 0 Z"/>
-      <path d="M120.0 136.0 A60 55.2 0 0 1 240.0 136.0 Q228.0 155.8 216.0 136.0 Q204.0 161.3 192.0 136.0 Q180.0 155.8 168.0 136.0 Q156.0 161.3 144.0 136.0 Q132.0 155.8 120.0 136.0 Z" fill="#bcd38e"/>
-      <path d="M139.4 122.4 A43.2 39.7 0 0 1 165.2 98.7" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity=".4"/>
-      <g class="granas">
-        <rect x="160" y="96" width="12" height="4.5" rx="2.25" fill="#fff" transform="rotate(-25 166 98)"/>
-        <rect x="186" y="88" width="12" height="4.5" rx="2.25" fill="#f2c94c" transform="rotate(20 192 90)"/>
-        <rect x="208" y="104" width="12" height="4.5" rx="2.25" fill="#6fa8dc" transform="rotate(-50 214 106)"/>
-        <rect x="144" y="114" width="12" height="4.5" rx="2.25" fill="#f4a6b3" transform="rotate(40 150 116)"/>
-        <rect x="176" y="110" width="12" height="4.5" rx="2.25" fill="#fff" transform="rotate(70 182 112)"/>
-        <rect x="200" y="122" width="12" height="4.5" rx="2.25" fill="#f2c94c" transform="rotate(-10 206 124)"/>
-        <rect x="132" y="130" width="12" height="4.5" rx="2.25" fill="#6fa8dc" transform="rotate(15 138 132)"/>
-        <rect x="222" y="132" width="12" height="4.5" rx="2.25" fill="#fff" transform="rotate(35 228 134)"/>
-      </g>
-    </g>
-    <g id="chispas"></g>
-  </g></g></g>
+    <path class="gotera" style="--d:5.4s;--s:1.5;--dl:0s" fill="#4a2c1f" d="M170.5 228 h11 v26 a5.5 5.5 0 0 1 -11 0 Z"/>
+    <path class="gotera" style="--d:6.6s;--s:1.3;--dl:-2s" fill="#4a2c1f" d="M209.5 230 h13 v40 a6.5 6.5 0 0 1 -13 0 Z"/>
+    <path class="gotera" style="--d:4.8s;--s:1.5;--dl:-3.1s" fill="#4a2c1f" d="M243.0 228 h10 v18 a5.0 5.0 0 0 1 -10 0 Z"/>
+  </g>
+  <circle class="gota" cx="216" cy="278" r="6.5" fill="#4a2c1f"/>
+  <g id="migas"></g>
+</g></g></g>
 </svg>
-    <p class="acc-lema">Herramientas<br><span>hechas en casa.</span></p>
+    <p class="acc-lema">Herramientas de<br><span>Il Maestro del Gelato.</span></p>
   </div>
   <div class="acc-panel">
     <div class="acc-form">
@@ -1064,100 +1040,81 @@ function claveRepetida(f) {
   return f.nueva.value;
 }
 
-/* ---------- El helado del login ----------
-   Sigue el mouse (con resorte), mira el mail mientras escribís, cierra los ojos con la contraseña,
-   espía si mostrás la contraseña, se pone triste con un error y salta al entrar. */
+/* ---------- Las paletas del login ----------
+   Profundidad con el mouse (resorte), el abanico se cierra mientras escribís la contraseña,
+   se sacuden con un error y le pegan un mordiscón cuando entrás. */
 const helado = (() => {
-  const hel = $('#hel'), tilt = $('#hel-tilt'), pup = $('#pupilas');
-  const st = { tx: 0, ty: 0, x: 0, y: 0, vx: 0, vy: 0, rot: 0, vr: 0, trot: 0, corriendo: false };
-  let mirando = null; // input que el helado está mirando
+  const hel = $('#hel');
+  const capas = [['.p-izq', 0.55], ['.p-cen', 1], ['.p-der', 0.55]].map(([s, k]) => ({ el: hel.querySelector(s), k, x: 0, y: 0, vx: 0, vy: 0 }));
+  const obj = { x: 0, y: 0 };
+  let corriendo = false;
   const reducido = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  function objetivo(px, py) {
+  addEventListener('pointermove', e => {
+    if (document.body.dataset.estado !== 'acceso') return;
     const r = hel.getBoundingClientRect();
-    const cx = r.left + r.width / 2, cy = r.top + r.height * 0.34;
-    const dx = px - cx, dy = py - cy, dist = Math.hypot(dx, dy) || 1;
-    const k = Math.min(1, dist / 260);
-    st.tx = dx / dist * 4.2 * k; st.ty = dy / dist * 3.4 * k;
-    st.trot = Math.max(-3.5, Math.min(3.5, dx / innerWidth * 6));
-  }
+    obj.x = Math.max(-1, Math.min(1, (e.clientX - (r.left + r.width / 2)) / (innerWidth / 2)));
+    obj.y = Math.max(-1, Math.min(1, (e.clientY - (r.top + r.height / 2)) / (innerHeight / 2)));
+  }, { passive: true });
+
   function paso() {
-    // resorte simple (stiffness/damping) -> se siente vivo y es interrumpible
-    const K = 0.09, D = 0.74;
-    st.vx = (st.vx + (st.tx - st.x) * K) * D; st.x += st.vx;
-    st.vy = (st.vy + (st.ty - st.y) * K) * D; st.y += st.vy;
-    st.vr = (st.vr + (st.trot - st.rot) * 0.05) * 0.82; st.rot += st.vr;
-    pup.setAttribute('transform', `translate(${st.x.toFixed(2)} ${st.y.toFixed(2)})`);
-    tilt.style.transform = `rotate(${st.rot.toFixed(2)}deg)`;
-    if (document.body.dataset.estado === 'acceso') requestAnimationFrame(paso); else st.corriendo = false;
+    for (const c of capas) {
+      const tx = obj.x * 14 * c.k, ty = obj.y * 9 * c.k;
+      c.vx = (c.vx + (tx - c.x) * 0.06) * 0.8; c.x += c.vx;
+      c.vy = (c.vy + (ty - c.y) * 0.06) * 0.8; c.y += c.vy;
+      c.el.style.translate = `${c.x.toFixed(2)}px ${c.y.toFixed(2)}px`;
+    }
+    if (document.body.dataset.estado === 'acceso') requestAnimationFrame(paso); else corriendo = false;
   }
-  function arrancar() { if (reducido || st.corriendo) return; st.corriendo = true; requestAnimationFrame(paso); }
+  function arrancar() { if (reducido || corriendo) return; corriendo = true; requestAnimationFrame(paso); }
 
-  addEventListener('pointermove', e => { if (!mirando && document.body.dataset.estado === 'acceso') objetivo(e.clientX, e.clientY); }, { passive: true });
-
-  // Mira el texto que vas escribiendo en el mail
-  function mirarInput(inp) {
-    const r = inp.getBoundingClientRect();
-    const largo = Math.min(inp.value.length * 8.5, r.width - 30);
-    objetivo(r.left + 16 + largo, r.top + r.height / 2);
-  }
+  // Mientras escribís la contraseña el abanico se cierra (las paletas de los costados se guardan atrás)
   const acc = $('#acceso');
-  acc.addEventListener('focusin', e => {
-    const inp = e.target.closest('input');
-    if (!inp) return;
-    const clave = inp.dataset.ojo && inp.type === 'password';
-    hel.classList.toggle('cierra', !!clave);
-    hel.classList.toggle('espia', !!inp.dataset.ojo && inp.type === 'text');
-    mirando = inp; mirarInput(inp);
-  });
-  acc.addEventListener('focusout', () => {
-    setTimeout(() => {
-      if (acc.contains(document.activeElement) && document.activeElement.matches('input')) return;
-      hel.classList.remove('cierra', 'espia'); mirando = null;
-    }, 0);
-  });
-  acc.addEventListener('input', e => { if (e.target === mirando) mirarInput(e.target); });
-  // El ojito de la contraseña: si la mostrás, espía con un ojo
-  acc.addEventListener('click', e => {
-    if (!e.target.closest('.ojo')) return;
-    const inp = e.target.closest('.campo').querySelector('input');
-    hel.classList.toggle('espia', inp.type === 'text');
-    hel.classList.toggle('cierra', inp.type === 'password');
-  });
+  const esClave = el => el && el.matches('input[data-ojo]') && el.type === 'password';
+  acc.addEventListener('focusin', e => hel.classList.toggle('cierra', esClave(e.target)));
+  acc.addEventListener('focusout', () => setTimeout(() => hel.classList.toggle('cierra', esClave(document.activeElement)), 0));
+  acc.addEventListener('click', e => { if (e.target.closest('.ojo')) hel.classList.toggle('cierra', esClave(e.target.closest('.campo').querySelector('input'))); });
 
   function triste() {
-    hel.classList.remove('festeja', 'triste'); void hel.offsetWidth;
+    hel.classList.remove('festeja', 'triste'); void hel.getBoundingClientRect();
     hel.classList.add('triste');
     const f = $('.acc-form'); f.classList.remove('sacude'); void f.offsetWidth; f.classList.add('sacude');
-    clearTimeout(triste.t); triste.t = setTimeout(() => hel.classList.remove('triste'), 2600);
+    clearTimeout(triste.t); triste.t = setTimeout(() => hel.classList.remove('triste'), 900);
   }
+
+  // Mordiscón: tres círculos que "comen" la punta de la paleta + miguitas que caen
   function festeja() {
-    hel.classList.remove('triste', 'cierra', 'espia'); void hel.offsetWidth;
+    hel.classList.remove('triste', 'cierra');
     hel.classList.add('festeja');
     if (reducido) return Promise.resolve();
-    // chispitas de colores (granas) que saltan del cucurucho
-    const g = $('#chispas'), colores = ['#f2c94c', '#6fa8dc', '#f4a6b3', '#bcd38e', '#ffffff', '#8b5a3b'];
-    g.innerHTML = '';
-    for (let i = 0; i < 18; i++) {
-      const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-      const ang = (-160 + Math.random() * 140) * Math.PI / 180, v = 70 + Math.random() * 90;
-      r.setAttribute('x', 174); r.setAttribute('y', 92); r.setAttribute('width', 12); r.setAttribute('height', 4.5); r.setAttribute('rx', 2.25);
-      r.setAttribute('fill', colores[i % colores.length]);
-      g.appendChild(r);
-      r.animate([
-        { transform: 'translate(0,0) rotate(0deg)', opacity: 1 },
-        { transform: `translate(${Math.cos(ang) * v}px, ${Math.sin(ang) * v + 40}px) rotate(${Math.random() * 540 - 270}deg)`, opacity: 0 }
-      ], { duration: 700 + Math.random() * 250, easing: 'cubic-bezier(.16,1,.3,1)', fill: 'forwards' });
+    const mo = [...hel.querySelectorAll('.mo')], radios = [24, 20, 17], t0 = performance.now(), dur = 260;
+    (function crece(t) {
+      const p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+      mo.forEach((c, i) => c.setAttribute('r', (radios[i] * e).toFixed(2)));
+      if (p < 1) requestAnimationFrame(crece);
+    })(t0);
+    const g = $('#migas'); g.innerHTML = '';
+    const cx = +mo[0].getAttribute('cx'), cy = +mo[0].getAttribute('cy') + 14;
+    for (let i = 0; i < 14; i++) {
+      const m = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      m.setAttribute('cx', cx + Math.random() * 30 - 10); m.setAttribute('cy', cy + Math.random() * 16);
+      m.setAttribute('r', 1.8 + Math.random() * 2.6);
+      m.setAttribute('fill', ['#4a2c1f', '#c2d690', '#9fbe5f', '#5c3826'][i % 4]);
+      g.appendChild(m);
+      const dx = Math.random() * 70 - 20, dy = 90 + Math.random() * 120;
+      m.animate([{ transform: 'translate(0,0)', opacity: 1 }, { transform: `translate(${dx}px, ${dy}px)`, opacity: 0 }],
+        { duration: 650 + Math.random() * 300, delay: 120 + Math.random() * 80, easing: 'cubic-bezier(.5,0,.9,.6)', fill: 'forwards' });
     }
-    return new Promise(res => setTimeout(res, 650));
+    return new Promise(res => setTimeout(res, 750));
   }
+  function reset() { hel.querySelectorAll('.mo').forEach(c => c.setAttribute('r', 0)); $('#migas').innerHTML = ''; hel.classList.remove('festeja'); }
   function armar() {
     const s = $('#acceso');
     s.classList.add('armando');
     setTimeout(() => s.classList.remove('armando'), 1300);
     arrancar();
   }
-  return { triste, festeja, armar, arrancar };
+  return { triste, festeja, armar, arrancar: () => { reset(); arrancar(); } };
 })();
 
 $('#acc-logo').src = $('.brand img').src;
@@ -1266,7 +1223,7 @@ $('#acceso').addEventListener('submit', e => {
       await api('/cambiar-clave', { metodo: 'POST', datos: { nueva: claveRepetida(f) } });
       yo.debe_cambiar_clave = false;
       await helado.festeja();
-      irA ? volverAApp() : mostrarPortal();
+      mostrarPortal();
     }
   }).then(ok => { if (!ok) helado.triste(); });
 });
@@ -1275,21 +1232,7 @@ function entrar(datos) {
   if (datos.token) { token = datos.token; guardar('herr.token', token); }
   yo = datos;
   if (yo.debe_cambiar_clave) mostrarAcceso('cambiar');
-  else if (irA) volverAApp();
   else mostrarPortal();
-}
-
-// Una app sin sesión manda a la gente acá con #ir=<app>: al ingresar, se la devuelve a esa app ya adentro
-let irA = null;
-async function volverAApp() {
-  const app = irA; irA = null;
-  try {
-    const { url } = await api('/pase', { metodo: 'POST', datos: { app } });
-    location.replace(url);
-  } catch (e) {
-    mostrarPortal();
-    aviso(e.message);
-  }
 }
 
 function cerrarLocal() {
@@ -1314,11 +1257,15 @@ function mostrarPortal() {
 async function abrirApp(e, el) {
   const a = APPS.find(x => x.repo === el.dataset.repo);
   if (!a || !a.acceso || !CON_LOGIN_UNICO.includes(a.acceso)) return; // se abre como siempre
-  // Se abre al instante: si la app ya tiene su sesión, entra directo; si no, vuelve al portal a buscarla (#ir=)
   e.preventDefault();
-  const url = new URL(a.url);
-  url.hash = 'portal';
-  window.open(url.toString(), '_blank', 'noopener');
+  const w = window.open('about:blank', '_blank');
+  try {
+    const { url } = await api('/pase', { metodo: 'POST', datos: { app: a.acceso } });
+    if (w) { w.opener = null; w.location.href = url; } else location.href = url;
+  } catch (err) {
+    if (w) w.close();
+    aviso(err.message);
+  }
 }
 
 /* ---------- Mi cuenta ---------- */
@@ -1595,7 +1542,6 @@ $('#adm').addEventListener('click', async e => {
 /* ---------- Arranque ---------- */
 async function arrancar() {
   const h = new URLSearchParams(location.hash.slice(1));
-  if (h.get('ir')) { irA = h.get('ir'); history.replaceState(null, '', location.pathname + location.search); }
   if (h.get('clave')) return mostrarAcceso('clave', { codigo: h.get('clave') });
   if (!token) return mostrarAcceso('login');
   try { entrar(await api('/yo')); }
