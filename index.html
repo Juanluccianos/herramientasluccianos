@@ -558,6 +558,40 @@ button.fila:hover .chev { transform: translateX(2px); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0s !important; animation: none !important; }
 }
+
+/* ===== Centro de control: pendientes de cada app y buscador en todas las herramientas ===== */
+.pend { display: none; margin-top: 30px; }
+body[data-estado="portal"] .pend.on { display: block; }
+.pend h2, .res h2 { margin: 0 0 12px; font: 700 13px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.pend-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.pend-item { --c: var(--app); display: flex; flex-direction: column; gap: 8px; padding: 18px 18px 16px; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--sh-card); color: var(--ink); text-decoration: none; transition: box-shadow .2s var(--ease), transform .2s var(--ease); animation: pend-in .5s var(--ease-out) both; }
+.pend-item:hover { box-shadow: var(--sh-card-h); transform: translateY(-2px); }
+.pend-item:first-child { background: #A8C686; box-shadow: none; }
+.pend-item:first-child .pend-app, .pend-item:first-child .pend-txt { color: #1d2f0d; }
+.pend-app { display: flex; align-items: center; gap: 8px; font: 700 12.5px/1 var(--sans); color: var(--muted); }
+.pend-app .tile { display: grid; width: 26px; height: 26px; border-radius: 8px; }
+.pend-app .tile svg { width: 14px; height: 14px; }
+.pend-n { font: 800 38px/1 var(--display); letter-spacing: -.03em; }
+.pend-n.alerta { color: var(--warn); }
+.pend-txt { font-size: 14px; color: var(--muted); line-height: 1.35; }
+.pend-ok { display: flex; align-items: center; gap: 10px; padding: 16px 18px; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--sh-card); color: var(--muted); font-size: 14.5px; }
+.pend-ok b { color: var(--ink); }
+.pend-cargando { height: 116px; border-radius: var(--r-lg); background: linear-gradient(90deg, var(--surface-2), var(--surface), var(--surface-2)); background-size: 200% 100%; animation: pend-brillo 1.2s linear infinite; }
+@keyframes pend-in { from { opacity: 0; transform: translateY(6px); } }
+@keyframes pend-brillo { to { background-position: -200% 0; } }
+.res { display: none; margin-top: 26px; }
+body[data-estado="portal"] .res.on { display: block; }
+.res-grupos { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+.res-grupo { --c: var(--app); padding: 14px; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--sh-card); }
+.res-grupo h3 { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; font: 700 13px var(--sans); color: var(--muted); }
+.res-grupo h3 .tile { display: grid; width: 24px; height: 24px; border-radius: 7px; }
+.res-grupo h3 .tile svg { width: 13px; height: 13px; }
+.res-item { display: block; padding: 9px 10px; border-radius: 10px; color: var(--ink); text-decoration: none; }
+.res-item:hover, .res-item:focus-visible { background: var(--surface-2); }
+.res-item b { display: block; font-size: 14px; font-weight: 600; }
+.res-item small { color: var(--muted); font-size: 12.5px; }
+.res-nada { color: var(--muted); font-size: 14px; padding: 4px 2px; }
+@media (prefers-reduced-motion: reduce) { .pend-item, .pend-cargando { animation: none; } }
 </style>
 </head>
 <body class="intro" data-estado="cargando">
@@ -641,9 +675,19 @@ button.fila:hover .chev { transform: translateX(2px); }
       </div>
       <label class="search">
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input id="q" type="search" placeholder="Buscar por nombre, área o función…" autocomplete="off" spellcheck="false" aria-label="Buscar herramienta">
-        <kbd>/</kbd>
+        <input id="q" type="search" placeholder="Buscar herramienta, factura, local, insumo…" autocomplete="off" spellcheck="false" aria-label="Buscar herramienta">
+        <kbd>Ctrl K</kbd>
       </label>
+    </section>
+
+    <section class="res" id="res" aria-labelledby="res-t" aria-live="polite">
+      <h2 id="res-t">En tus herramientas</h2>
+      <div class="res-grupos" id="res-grupos"></div>
+    </section>
+
+    <section class="pend" id="pend" aria-labelledby="pend-t">
+      <h2 id="pend-t">Para hoy</h2>
+      <div class="pend-grid" id="pend-grid"></div>
     </section>
 
     <section class="recientes" id="recientes" aria-labelledby="rec-t">
@@ -955,7 +999,7 @@ document.addEventListener('click', e => {
   if (v) { sinIntro(); vista = v.dataset.vista; guardar('herr.vista', vista); aplicarVista(); }
 });
 
-$('#q').addEventListener('input', () => { sinIntro(); render(); });
+$('#q').addEventListener('input', () => { sinIntro(); render(); buscarEnApps(); });
 $('#q').addEventListener('keydown', e => {
   if (e.key === 'Enter') { const p = $('#lista .card'); if (p) { p.click(); } }
   if (e.key === 'ArrowDown') { const p = $('#lista .card'); if (p) { e.preventDefault(); p.focus(); } }
@@ -964,8 +1008,11 @@ $('#limpiar').addEventListener('click', () => { $('#q').value = ''; filtro = 'to
 
 document.addEventListener('keydown', e => {
   const enInput = document.activeElement === $('#q');
-  if (e.key === '/' && !enInput) { e.preventDefault(); $('#q').focus(); $('#q').select(); return; }
-  if (e.key === 'Escape' && enInput) { $('#q').value = ''; render(); $('#q').blur(); return; }
+  if ((e.key === '/' && !enInput) || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k')) {
+    if (document.body.dataset.estado !== 'portal') return;
+    e.preventDefault(); $('#q').focus(); $('#q').select(); return;
+  }
+  if (e.key === 'Escape' && enInput) { $('#q').value = ''; render(); buscarEnApps(); $('#q').blur(); return; }
   const cards = [...document.querySelectorAll('#lista .card')];
   const i = cards.indexOf(document.activeElement);
   if (i < 0) return;
@@ -1166,7 +1213,17 @@ function mostrarAcceso(modo, extra = {}) {
         <p class="msg" role="alert">${esc(extra.msg || '')}</p>
         <button class="btn" type="submit"><span>Ingresar</span><svg class="i fl" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
       </form>
+      <button class="lnk" type="button" data-ir="link">Mandame un link para entrar sin contraseña</button>
       <button class="lnk" type="button" data-ir="olvide">Me olvidé la contraseña</button>`,
+    link: `
+      <h1>Entrar con un link</h1>
+      <p class="sub">Escribí tu mail y te mandamos un link para entrar sin contraseña. Vale 15 minutos.</p>
+      <form data-form="link" novalidate>
+        <label class="campo"><span>Mail</span><input name="email" type="email" autocomplete="username" inputmode="email" required value="${esc(extra.email || '')}"></label>
+        <p class="msg" role="alert"></p>
+        <button class="btn" type="submit"><span>Mandarme el link</span><svg class="i fl" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </form>
+      <button class="lnk" type="button" data-ir="login">Volver a ingresar</button>`,
     olvide: `
       <h1>Contraseña nueva</h1>
       <p class="sub">Escribí tu mail y te mandamos un link para elegir una contraseña nueva.</p>
@@ -1211,6 +1268,10 @@ $('#acceso').addEventListener('submit', e => {
       const r = await api('/login', { metodo: 'POST', datos: { email: f.email.value, clave: f.clave.value } });
       await helado.festeja();
       entrar(r);
+    } else if (modo === 'link') {
+      const r = await api('/link-ingreso', { metodo: 'POST', datos: { email: f.email.value } });
+      msg.textContent = r.mensaje + ' Abrilo desde este mismo dispositivo.';
+      msg.classList.add('ok');
     } else if (modo === 'olvide') {
       const r = await api('/olvide', { metodo: 'POST', datos: { email: f.email.value } });
       msg.textContent = r.mensaje + ' Si no te llega, pedile un link nuevo a Administración.';
@@ -1268,6 +1329,162 @@ function mostrarPortal() {
   document.body.dataset.estado = 'portal';
   aplicarVista(); renderRecientes(); tabs(); render();
   setTimeout(sinIntro, 1400);
+  cargarPendientes();
+}
+
+/* ---------- Centro de control: lo que espera en cada app, y el buscador en todas ----------
+   El portal le pregunta directo a cada app con tu misma sesión (cada app solo contesta si tenés acceso). */
+const API_APP = {
+  facturas: 'https://facturas-api.lucciano-viaticos.workers.dev',
+  efectivo: 'https://facturasefectivo-api.lucciano-viaticos.workers.dev',
+  viaticos: 'https://viaticos-api.lucciano-viaticos.workers.dev',
+  asientos: 'https://asientos-api.lucciano-viaticos.workers.dev',
+  payway: 'https://payway-api.lucciano-viaticos.workers.dev',
+  costos: 'https://costos-api.lucciano-viaticos.workers.dev',
+  relevamientos: 'https://relevamientos-api.lucciano-viaticos.workers.dev'
+};
+const mesActual = () => new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 7);
+const plata = n => '$ ' + Number(n || 0).toLocaleString('es-AR', { maximumFractionDigits: 0 });
+async function deApp(app, ruta) {
+  const ctrl = new AbortController(), t = setTimeout(() => ctrl.abort(), 9000);
+  try {
+    const r = await fetch(API_APP[app] + ruta, { headers: { Authorization: 'Bearer ' + token }, signal: ctrl.signal });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return await r.json();
+  } finally { clearTimeout(t); }
+}
+const tieneApp = id => !!yo && yo.apps.some(a => a.id === id);
+const rolEn = id => (yo.apps.find(a => a.id === id) || {}).rol;
+
+const PENDIENTES = {
+  facturas: async () => {
+    const t = await deApp('facturas', '/api/tablero'), pe = t.por_estado || {};
+    return [
+      pe.excepcion?.n && { n: pe.excepcion.n, txt: 'facturas para revisar', ruta: '#/bandeja' },
+      pe.lista?.n && { n: pe.lista.n, txt: 'facturas listas para mandar a Shares', ruta: '#/shares' },
+      pe.error_shares?.n && { n: pe.error_shares.n, txt: 'facturas con error de Shares', ruta: '#/facturas', alerta: 1 }
+    ];
+  },
+  efectivo: async () => {
+    const t = await deApp('efectivo', '/api/tablero'), pe = t.por_estado || {};
+    return [
+      pe.excepcion?.n && { n: pe.excepcion.n, txt: 'gastos para revisar', ruta: '#/revisar' },
+      pe.lista?.n && { n: pe.lista.n, txt: 'gastos listos para Shares', ruta: '#/shares' }
+    ];
+  },
+  payway: async () => {
+    const l = ((await deApp('payway', '/api/lotes')).lotes || [])[0];
+    if (!l) return [];
+    return [
+      l.excepciones && { n: l.excepciones, txt: `liquidaciones para revisar (${l.periodo})`, ruta: '#/mes/' + l.periodo },
+      l.listas && { n: l.listas, txt: `liquidaciones listas para Shares (${l.periodo})`, ruta: '#/mes/' + l.periodo },
+      l.errores_shares && { n: l.errores_shares, txt: 'liquidaciones con error de Shares', ruta: '#/mes/' + l.periodo, alerta: 1 }
+    ];
+  },
+  costos: async () => {
+    const a = (await deApp('costos', '/api/alertas')).alertas || [];
+    return [a.length && { n: a.length, txt: 'alertas de precio sin ver', ruta: '#/alertas', alerta: 1 }];
+  },
+  asientos: async () => {
+    const pe = (await deApp('asientos', '/api/tablero')).por_estado || {};
+    const obs = (pe.observado?.n || 0) + (pe.error?.n || 0);
+    return [
+      pe.pendiente?.n && { n: pe.pendiente.n, txt: 'asientos para mandar a Shares', ruta: '#/asientos' },
+      obs && { n: obs, txt: 'asientos observados o con error', ruta: '#/asientos', alerta: 1 }
+    ];
+  },
+  relevamientos: async () => {
+    if (!['jefe', 'admin'].includes(rolEn('relevamientos'))) return [];
+    const c = await deApp('relevamientos', '/api/informes/contador');
+    return [c.sin_ver && { n: c.sin_ver, txt: 'informes de supervisores sin ver', ruta: '#/informes' }];
+  },
+  viaticos: async () => {
+    if (rolEn('viaticos') !== 'admin') return [];
+    const g = (await datosViaticos()) || [];
+    const desde = new Date(Date.now() - 7 * 864e5).toISOString().slice(0, 10);
+    const n = g.filter(x => String(x.fecha_rendicion || x.fecha || '') >= desde).length;
+    return [n && { n, txt: 'comprobantes de viáticos esta semana', ruta: '' }];
+  }
+};
+let cacheViaticos = null;
+async function datosViaticos() {
+  if (!cacheViaticos) cacheViaticos = deApp('viaticos', '/api/admin/gastos?periodo=' + mesActual()).then(d => d.gastos || []).catch(() => []);
+  return cacheViaticos;
+}
+
+function appPortal(id) { return APPS_TODAS.find(a => a.acceso === id); }
+function tileDe(a) { return `<span class="tile" style="--app:${a.color}">${svg(ICONOS[a.icono])}</span>`; }
+function linkApp(id, ruta) {
+  const a = appPortal(id); if (!a) return '#';
+  const u = new URL(a.url); u.hash = 'portal' + (ruta ? '=' + encodeURIComponent(ruta) : '');
+  return u.toString();
+}
+
+async function cargarPendientes() {
+  const caja = $('#pend'), grid = $('#pend-grid');
+  const ids = Object.keys(PENDIENTES).filter(tieneApp);
+  if (!ids.length) { caja.classList.remove('on'); return; }
+  caja.classList.add('on');
+  grid.innerHTML = '<div class="pend-cargando"></div><div class="pend-cargando"></div><div class="pend-cargando"></div>';
+  const res = await Promise.all(ids.map(id => PENDIENTES[id]().then(l => l.filter(Boolean).map(x => ({ ...x, app: id }))).catch(() => [])));
+  const items = res.flat().sort((a, b) => b.n - a.n).slice(0, 8);
+  grid.innerHTML = items.length ? items.map((x, i) => {
+    const a = appPortal(x.app);
+    return `<a class="pend-item" style="--app:${a.color};animation-delay:${i * 50}ms" href="${esc(linkApp(x.app, x.ruta))}">
+      <span class="pend-app">${tileDe(a)}${esc(a.nombre)}</span>
+      <span class="pend-n ${x.alerta && i ? 'alerta' : ''}">${x.n > 999 ? '999+' : x.n}</span>
+      <span class="pend-txt">${esc(x.txt)}</span></a>`;
+  }).join('') : `<div class="pend-ok">${svg('<path d="M20 6 9 17l-5-5"/>')}<span><b>Todo al día.</b> No hay nada esperando en tus herramientas.</span></div>`;
+}
+
+// Buscador: además de filtrar herramientas, busca adentro de cada app (facturas, gastos, liquidaciones, insumos, asientos, locales)
+let cacheInsumos = null, cacheLocales = null, buscarT = null, buscarN = 0;
+const BUSCADORES = {
+  facturas: async q => ((await deApp('facturas', '/api/facturas?limite=4&q=' + encodeURIComponent(q))).facturas || []).map(f => ({
+    t: f.razon_social_emisor || 'Factura', d: `Factura ${f.pto_vta ?? ''}-${f.numero ?? ''} · ${plata(f.total)}`, ruta: '#/factura/' + f.id })),
+  efectivo: async q => ((await deApp('efectivo', '/api/comprobantes?limite=4&q=' + encodeURIComponent(q))).comprobantes || []).map(c => ({
+    t: c.razon_social_emisor || 'Comprobante #' + c.id, d: `${c.medio_pago === 'tc' ? 'Tarjeta' : 'Efectivo'} · ${plata(c.total)}`, ruta: '#/comprobante/' + c.id })),
+  payway: async q => ((await deApp('payway', '/api/liquidaciones?q=' + encodeURIComponent(q))).liquidaciones || []).slice(0, 4).map(l => ({
+    t: l.direccion || 'Establecimiento ' + l.nro_establecimiento, d: `Liquidación ${l.periodo} · est. ${l.nro_establecimiento}`, ruta: '#/liq/' + l.id })),
+  costos: async q => {
+    if (!cacheInsumos) cacheInsumos = deApp('costos', '/api/insumos').then(d => d.insumos || []).catch(() => []);
+    return (await cacheInsumos).filter(i => normal(i.nombre).includes(q)).slice(0, 4).map(i => ({
+      t: i.nombre, d: i.ult_precio ? `Última compra ${plata(i.ult_precio)}${i.unidad ? ' / ' + i.unidad : ''}` : 'Insumo', ruta: '#/insumo/' + i.id }));
+  },
+  asientos: async q => ((await deApp('asientos', '/api/asientos?limite=4&q=' + encodeURIComponent(q))).asientos || []).map(a => ({
+    t: a.observaciones || a.ref || 'Asiento #' + a.id, d: `${a.empresa || ''} · ${a.fecha || ''} · ${plata(a.total)}`, ruta: '#/asiento/' + a.id })),
+  relevamientos: async q => {
+    if (!cacheLocales) cacheLocales = deApp('relevamientos', '/api/locales?periodo=' + mesActual()).then(d => d.locales || []).catch(() => []);
+    return (await cacheLocales).filter(l => normal(l.name + ' ' + (l.code || '')).includes(q)).slice(0, 4).map(l => ({
+      t: l.name, d: l.score != null ? `Último relevamiento: ${Number(l.score).toLocaleString('es-AR', { maximumFractionDigits: 1 })} puntos` : 'Sin relevar este mes', ruta: '#/local/' + l.id }));
+  },
+  viaticos: async q => {
+    if (rolEn('viaticos') !== 'admin') return [];
+    return ((await datosViaticos()) || []).filter(g => normal((g.razon_social || '') + ' ' + (g.supervisor || g.nombre || '') + ' ' + (g.cuit || '')).includes(q)).slice(0, 4).map(g => ({
+      t: g.razon_social || 'Comprobante', d: `${g.supervisor || g.nombre || ''} · ${plata(g.total)}`, ruta: '' }));
+  }
+};
+const normal = s => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+function buscarEnApps() {
+  clearTimeout(buscarT);
+  const q = normal($('#q').value.trim());
+  const caja = $('#res');
+  if (q.length < 3 || !yo) { caja.classList.remove('on'); return; }
+  buscarT = setTimeout(async () => {
+    const n = ++buscarN;
+    const ids = Object.keys(BUSCADORES).filter(tieneApp);
+    caja.classList.add('on');
+    $('#res-grupos').innerHTML = '<div class="pend-cargando"></div>';
+    const res = await Promise.all(ids.map(id => BUSCADORES[id](q).then(l => ({ id, l })).catch(() => ({ id, l: [] }))));
+    if (n !== buscarN) return;
+    const con = res.filter(r => r.l.length);
+    $('#res-grupos').innerHTML = con.length ? con.map(({ id, l }) => {
+      const a = appPortal(id);
+      return `<div class="res-grupo" style="--app:${a.color}"><h3>${tileDe(a)}${esc(a.nombre)}</h3>
+        ${l.map(x => `<a class="res-item" href="${esc(linkApp(id, x.ruta))}"><b>${esc(x.t)}</b><small>${esc(x.d)}</small></a>`).join('')}</div>`;
+    }).join('') : `<p class="res-nada">No encontramos «${esc($('#q').value.trim())}» adentro de tus herramientas.</p>`;
+  }, 350);
 }
 
 async function abrirApp(e, el) {
@@ -1556,6 +1773,12 @@ async function arrancar() {
   const h = new URLSearchParams(location.hash.slice(1));
   if (h.get('ir')) { irA = h.get('ir'); history.replaceState(null, '', location.pathname + location.search); }
   if (h.get('clave')) return mostrarAcceso('clave', { codigo: h.get('clave') });
+  if (h.get('entrar')) {
+    const codigo = h.get('entrar');
+    history.replaceState(null, '', location.pathname + location.search);
+    try { return entrar(await api('/entrar-con-link', { metodo: 'POST', datos: { codigo } })); }
+    catch (e) { return mostrarAcceso('login', { msg: e.message }); }
+  }
   if (!token) return mostrarAcceso('login');
   try { entrar(await api('/yo')); }
   catch (e) { if (token) mostrarAcceso('login', { msg: e.message }); }
