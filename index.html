@@ -1416,18 +1416,31 @@ function appPortal(id) { return APPS_TODAS.find(a => a.acceso === id); }
 function tileDe(a) { return `<span class="tile" style="--app:${a.color}">${svg(ICONOS[a.icono])}</span>`; }
 function linkApp(id, ruta) {
   const a = appPortal(id); if (!a) return '#';
-  const u = new URL(a.url); u.hash = 'portal' + (ruta ? '=' + encodeURIComponent(ruta) : '');
+  const u = new URL(a.url); u.hash = 'portal!' + yo.usuario.id + (ruta ? '=' + encodeURIComponent(ruta) : '');
   return u.toString();
 }
 
+// Se guardan 5 minutos en el navegador: se muestran al instante y se actualizan solos de fondo
+// (así el portal no le pide todo a las 7 apps cada vez que entrás).
+const PEND_MIN = 5;
 async function cargarPendientes() {
-  const caja = $('#pend'), grid = $('#pend-grid');
+  const caja = $('#pend');
   const ids = Object.keys(PENDIENTES).filter(tieneApp);
   if (!ids.length) { caja.classList.remove('on'); return; }
   caja.classList.add('on');
-  grid.innerHTML = '<div class="pend-cargando"></div><div class="pend-cargando"></div><div class="pend-cargando"></div>';
+  const clave = 'herr.pend.' + yo.usuario.id;
+  let guardado = null;
+  try { guardado = JSON.parse(localStorage.getItem(clave) || 'null'); } catch {}
+  if (guardado) pintarPendientes(guardado.items);
+  else $('#pend-grid').innerHTML = '<div class="pend-cargando"></div><div class="pend-cargando"></div><div class="pend-cargando"></div>';
+  if (guardado && Date.now() - guardado.at < PEND_MIN * 60e3) return;
   const res = await Promise.all(ids.map(id => PENDIENTES[id]().then(l => l.filter(Boolean).map(x => ({ ...x, app: id }))).catch(() => [])));
   const items = res.flat().sort((a, b) => b.n - a.n).slice(0, 8);
+  try { localStorage.setItem(clave, JSON.stringify({ at: Date.now(), items })); } catch {}
+  pintarPendientes(items);
+}
+function pintarPendientes(items) {
+  const grid = $('#pend-grid');
   grid.innerHTML = items.length ? items.map((x, i) => {
     const a = appPortal(x.app);
     return `<a class="pend-item" style="--app:${a.color};animation-delay:${i * 50}ms" href="${esc(linkApp(x.app, x.ruta))}">
@@ -1466,6 +1479,7 @@ const BUSCADORES = {
 };
 const normal = s => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
+const cacheBusquedas = new Map();
 function buscarEnApps() {
   clearTimeout(buscarT);
   const q = normal($('#q').value.trim());
@@ -1476,7 +1490,9 @@ function buscarEnApps() {
     const ids = Object.keys(BUSCADORES).filter(tieneApp);
     caja.classList.add('on');
     $('#res-grupos').innerHTML = '<div class="pend-cargando"></div>';
-    const res = await Promise.all(ids.map(id => BUSCADORES[id](q).then(l => ({ id, l })).catch(() => ({ id, l: [] }))));
+    // Se busca cuando dejás de escribir, y la misma búsqueda no se repite
+    if (!cacheBusquedas.has(q)) cacheBusquedas.set(q, Promise.all(ids.map(id => BUSCADORES[id](q).then(l => ({ id, l })).catch(() => ({ id, l: [] })))));
+    const res = await cacheBusquedas.get(q);
     if (n !== buscarN) return;
     const con = res.filter(r => r.l.length);
     $('#res-grupos').innerHTML = con.length ? con.map(({ id, l }) => {
@@ -1484,7 +1500,7 @@ function buscarEnApps() {
       return `<div class="res-grupo" style="--app:${a.color}"><h3>${tileDe(a)}${esc(a.nombre)}</h3>
         ${l.map(x => `<a class="res-item" href="${esc(linkApp(id, x.ruta))}"><b>${esc(x.t)}</b><small>${esc(x.d)}</small></a>`).join('')}</div>`;
     }).join('') : `<p class="res-nada">No encontramos «${esc($('#q').value.trim())}» adentro de tus herramientas.</p>`;
-  }, 350);
+  }, 650);
 }
 
 async function abrirApp(e, el) {
@@ -1493,7 +1509,7 @@ async function abrirApp(e, el) {
   // Se abre al instante: si la app ya tiene su sesión, entra directo; si no, vuelve al portal a buscarla (#ir=)
   e.preventDefault();
   const url = new URL(a.url);
-  url.hash = 'portal';
+  url.hash = 'portal!' + yo.usuario.id;   // la app confirma que su sesión es de esta misma persona
   location.href = url.toString();   // misma pestaña: cada app tiene su botón para volver a Herramientas
 }
 
