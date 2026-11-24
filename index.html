@@ -990,7 +990,7 @@ const ID_ACCESO = {
 };
 // Apps que ya usan el login único: al abrirlas, el portal les pasa el acceso.
 // Se suman de a una a medida que se migran (ej: ['asientos']). Las demás se abren como siempre.
-const CON_LOGIN_UNICO = [];
+const CON_LOGIN_UNICO = ['asientos', 'costos'];
 const ROL_NOMBRE = { carga: 'Carga', aprobador: 'Aprobador', admin: 'Admin', solo_escaneo: 'Solo escaneo', supervisor: 'Supervisor', jefe: 'Jefe', consulta: 'Consulta', editor: 'Editor' };
 const EXTRA_NOMBRE = { director: 'Director (aprueba lotes de pago)' };
 APPS_TODAS.forEach(a => { a.acceso = ID_ACCESO[a.repo] || null; });
@@ -1223,7 +1223,7 @@ $('#acceso').addEventListener('submit', e => {
       await api('/cambiar-clave', { metodo: 'POST', datos: { nueva: claveRepetida(f) } });
       yo.debe_cambiar_clave = false;
       await helado.festeja();
-      mostrarPortal();
+      irA ? volverAApp() : mostrarPortal();
     }
   }).then(ok => { if (!ok) helado.triste(); });
 });
@@ -1232,7 +1232,21 @@ function entrar(datos) {
   if (datos.token) { token = datos.token; guardar('herr.token', token); }
   yo = datos;
   if (yo.debe_cambiar_clave) mostrarAcceso('cambiar');
+  else if (irA) volverAApp();
   else mostrarPortal();
+}
+
+// Una app sin sesión manda a la gente acá con #ir=<app>: al ingresar, se la devuelve a esa app ya adentro
+let irA = null;
+async function volverAApp() {
+  const app = irA; irA = null;
+  try {
+    const { url } = await api('/pase', { metodo: 'POST', datos: { app } });
+    location.replace(url);
+  } catch (e) {
+    mostrarPortal();
+    aviso(e.message);
+  }
 }
 
 function cerrarLocal() {
@@ -1257,15 +1271,11 @@ function mostrarPortal() {
 async function abrirApp(e, el) {
   const a = APPS.find(x => x.repo === el.dataset.repo);
   if (!a || !a.acceso || !CON_LOGIN_UNICO.includes(a.acceso)) return; // se abre como siempre
+  // Se abre al instante: si la app ya tiene su sesión, entra directo; si no, vuelve al portal a buscarla (#ir=)
   e.preventDefault();
-  const w = window.open('about:blank', '_blank');
-  try {
-    const { url } = await api('/pase', { metodo: 'POST', datos: { app: a.acceso } });
-    if (w) { w.opener = null; w.location.href = url; } else location.href = url;
-  } catch (err) {
-    if (w) w.close();
-    aviso(err.message);
-  }
+  const url = new URL(a.url);
+  url.hash = 'portal';
+  window.open(url.toString(), '_blank', 'noopener');
 }
 
 /* ---------- Mi cuenta ---------- */
@@ -1542,6 +1552,7 @@ $('#adm').addEventListener('click', async e => {
 /* ---------- Arranque ---------- */
 async function arrancar() {
   const h = new URLSearchParams(location.hash.slice(1));
+  if (h.get('ir')) { irA = h.get('ir'); history.replaceState(null, '', location.pathname + location.search); }
   if (h.get('clave')) return mostrarAcceso('clave', { codigo: h.get('clave') });
   if (!token) return mostrarAcceso('login');
   try { entrar(await api('/yo')); }
