@@ -1624,6 +1624,7 @@ function listaUsuarios() {
       <p class="sub">Quién entra a cada herramienta y con qué rol.</p>
       <div class="adm-tools">
         <label class="buscar">${svg(ICO.lupa)}<input id="adm-q" type="search" placeholder="Buscar por nombre o mail" value="${esc(adm.q)}" autocomplete="off" aria-label="Buscar usuario"></label>
+        ${cuenta.sin ? `<button class="btn chico sec" type="button" data-adm="bienvenida" title="Les manda el mail para elegir su contraseña">${svg(ICO.mail)}Mandar bienvenida (${cuenta.sin})</button>` : ''}
         <button class="btn chico" type="button" data-adm="nuevo">${svg(ICO.mas)}Nuevo</button>
       </div>
       <div class="filtros" role="group" aria-label="Filtrar por estado">
@@ -1768,6 +1769,24 @@ $('#adm').addEventListener('click', async e => {
   const id = +b.dataset.id, acc = b.dataset.adm;
   if (acc === 'lista') return listaUsuarios();
   if (acc === 'nuevo') return editorUsuario(null);
+  if (acc === 'bienvenida') {
+    // Directivos (superadmins y socios con Consulta) quedan afuera: a ellos se les escribe a mano
+    const sin = adm.usuarios.filter(u => estadoU(u) === 'sin' && !u.superadmin && !u.permisos.some(p => p.rol === 'consulta'));
+    if (!sin.length) return aviso('No queda nadie para mandar (los directivos se mandan a mano).');
+    if (!confirm(`Se le manda el mail de bienvenida a ${sin.length} persona${sin.length === 1 ? '' : 's'} que todavía no eligieron su contraseña:\n\n${sin.map(u => '• ' + u.nombre).join('\n')}\n\n¿Mandamos?`)) return;
+    b.disabled = true;
+    let ok = 0, mal = [];
+    try {
+      // De a 8 por pedido, cada persona una sola vez (aunque su mail falle)
+      for (let i = 0; i < sin.length; i += 8) {
+        b.textContent = `Mandando… ${i} de ${sin.length}`;
+        const r = await api('/admin/bienvenida', { metodo: 'POST', datos: { ids: sin.slice(i, i + 8).map(u => u.id) } });
+        r.resultado.forEach(x => x.enviado ? ok++ : mal.push(x.email));
+      }
+      aviso(mal.length ? `Se mandaron ${ok}. No salieron: ${mal.join(', ')}` : `Listo: se mandaron ${ok} mails de bienvenida.`);
+    } catch (err) { aviso(err.message); }
+    return cargarUsuarios();
+  }
   if (acc === 'editar') return editorUsuario(adm.usuarios.find(u => u.id === id));
   try {
     b.disabled = true;
