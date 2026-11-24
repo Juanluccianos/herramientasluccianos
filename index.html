@@ -1233,6 +1233,8 @@ function entrar(datos) {
   yo = datos;
   if (yo.debe_cambiar_clave) mostrarAcceso('cambiar');
   else if (irA) volverAApp();
+  // Operativos con una sola app (supervisores, escaneo): van directo a su app, sin pasar por el tablero
+  else if (yo.ve_portal === false && yo.apps.length === 1) { irA = yo.apps[0].id; volverAApp(); }
   else mostrarPortal();
 }
 
@@ -1275,7 +1277,7 @@ async function abrirApp(e, el) {
   e.preventDefault();
   const url = new URL(a.url);
   url.hash = 'portal';
-  window.open(url.toString(), '_blank', 'noopener');
+  location.href = url.toString();   // misma pestaña: cada app tiene su botón para volver a Herramientas
 }
 
 /* ---------- Mi cuenta ---------- */
