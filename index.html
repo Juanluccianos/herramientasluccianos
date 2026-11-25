@@ -217,6 +217,16 @@ main { flex: 1; padding-bottom: 80px; }
 .pv-checklist .ck .bx svg { width: 10px; height: 10px; stroke-width: 3; }
 .pv-checklist .ck .bx.no { background: none; box-shadow: inset 0 0 0 1.5px var(--line-strong); }
 
+/* Calidad */
+.pv-calidad .win { left: 18px; right: 18px; top: 22px; height: 172px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; padding: 10px; }
+.pv-calidad .kc { background: var(--surface-2); border-radius: 7px; padding: 6px; display: flex; flex-direction: column; gap: 5px; }
+.pv-calidad .kh { display: flex; align-items: center; gap: 4px; height: 10px; }
+.pv-calidad .kh i { width: 6px; height: 6px; border-radius: 50%; background: var(--c); }
+.pv-calidad .kt { background: #fff; border-radius: 5px; border-left: 3px solid var(--c); padding: 5px 5px 6px; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 1px 2px rgba(21,20,15,.08); transition: transform .45s var(--ease-out); }
+.pv-calidad .kt.cr { border-left-color: #c0392b; } .pv-calidad .kt.ok { border-left-color: #2e8b57; }
+.pv-calidad .kt .ln { height: 4px; }
+.card:hover .pv-calidad .kt.mueve { transform: translateX(calc(100% + 13px)); }
+
 /* Ruleta */
 .pv-ruleta .rueda { position: absolute; left: 50%; top: 18px; width: 210px; height: 210px; margin-left: -105px; transition: transform 1.6s var(--ease-out); filter: drop-shadow(0 10px 18px rgba(21,20,15,.18)); }
 .card:hover .pv-ruleta .rueda { transform: rotate(250deg); }
@@ -794,7 +804,8 @@ const ICONOS = {
   banco:    '<path d="M3 21h18M5 21V10M9.5 21V10M14.5 21V10M19 21V10M12 3 3 8h18z"/>',
   grafico:  '<path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 6-6"/><path d="M16 8h4v4"/>',
   checklist:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3h6v3H9zM9 12l2 2 4-4M9 17h6"/>',
-  ruleta:   '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2"/><path d="M12 3v7M12 14v7M3 12h7M14 12h7"/>'
+  ruleta:   '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2"/><path d="M12 3v7M12 14v7M3 12h7M14 12h7"/>',
+  calidad:  '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>'
 };
 const DISP = {
   escritorio: '<rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>',
@@ -831,6 +842,10 @@ const APPS_TODAS = [
     resumen: 'Relevamiento mensual de locales con checklist, fotos y puntaje.',
     puntos: ['Funciona sin conexión a internet', 'Puntaje automático y ranking mensual', 'Informe de gestión y exportación a Excel'],
     usuarios: 'Supervisores y Jefaturas', dispositivos: ['celular', 'escritorio'] },
+  { nombre: 'Calidad', repo: 'calidadluccianos', url: 'https://calidad.luccianos.com.ar/', area: 'gestion', icono: 'calidad', color: '#2F8F78', nueva: true,
+    resumen: 'Tablero de tareas del equipo de Calidad: BPM, POES, laboratorio y asuntos regulatorios.',
+    puntos: ['Pendientes por puesto ordenados por riesgo y vencimiento', 'Checklist diario y rutina del turno', 'Tiempo real de resolución y carga de cada puesto'],
+    usuarios: 'Equipo de Calidad', dispositivos: ['celular', 'escritorio'] },
   { nombre: 'Ruleta de sorteos', repo: 'sorteoluccianos', url: 'https://ruletadesorteos.luccianos.com.ar/', area: 'gestion', icono: 'ruleta', color: '#C9603E',
     resumen: 'Elige al azar quiénes elaboran helado durante las visitas a la fábrica.',
     puntos: ['Carga de participantes desde un listado', 'Excluye a los ya seleccionados', 'Funciona sin conexión a internet'],
@@ -897,6 +912,18 @@ const PREVIAS = {
       <div class="score"><b>92</b><span>/ 100</span></div>
       <div class="bar-s"><i></i></div>
       ${[1, 1, 0].map((h, k) => `<div class="ck"><span class="bx${h ? '' : ' no'}">${h ? OK : ''}</span><span class="ln" style="width:${[70, 54, 62][k]}%"></span></div>`).join('')}
+    </div>`,
+  calidad: () => `
+    <div class="win">
+      <div class="kc"><div class="kh"><i style="background:#8a877e"></i><span class="ln" style="width:60%"></span></div>
+        <div class="kt cr mueve"><span class="ln" style="width:90%"></span><span class="ln" style="width:60%"></span></div>
+        <div class="kt"><span class="ln" style="width:80%"></span><span class="ln" style="width:45%"></span></div>
+        <div class="kt"><span class="ln" style="width:70%"></span></div></div>
+      <div class="kc"><div class="kh"><i style="background:#2d5bba"></i><span class="ln" style="width:70%"></span></div>
+        <div class="kt"><span class="ln" style="width:85%"></span><span class="ln" style="width:55%"></span></div></div>
+      <div class="kc"><div class="kh"><i style="background:#1f7a45"></i><span class="ln" style="width:55%"></span></div>
+        <div class="kt ok"><span class="ln" style="width:75%"></span><span class="ln" style="width:40%"></span></div>
+        <div class="kt ok"><span class="ln" style="width:65%"></span></div></div>
     </div>`,
   ruleta: () => `
     <svg class="aguja" viewBox="0 0 18 22" aria-hidden="true"><path d="M9 22 1 4a8 8 0 0 1 16 0z" fill="#15140f"/></svg>
@@ -1033,12 +1060,13 @@ $('#anio').textContent = '© ' + new Date().getFullYear();
 const API = 'https://acceso-api.lucciano-viaticos.workers.dev';
 const ID_ACCESO = {
   facturasluccianos: 'facturas', facturasefectivoluccianos: 'efectivo', viaticosluccianos: 'viaticos',
-  asientosluccianos: 'asientos', payway: 'payway', costosluccianos: 'costos', relevamientosluccianos: 'relevamientos'
+  asientosluccianos: 'asientos', payway: 'payway', costosluccianos: 'costos', relevamientosluccianos: 'relevamientos',
+  calidadluccianos: 'calidad'
 };
 // Apps que ya usan el login único: al abrirlas, el portal les pasa el acceso.
 // Se suman de a una a medida que se migran (ej: ['asientos']). Las demás se abren como siempre.
-const CON_LOGIN_UNICO = ['asientos', 'costos', 'payway', 'facturas', 'efectivo', 'relevamientos', 'viaticos'];
-const ROL_NOMBRE = { carga: 'Carga', aprobador: 'Aprobador', admin: 'Admin', solo_escaneo: 'Solo escaneo', supervisor: 'Supervisor', jefe: 'Jefe', consulta: 'Consulta', editor: 'Editor' };
+const CON_LOGIN_UNICO = ['asientos', 'costos', 'payway', 'facturas', 'efectivo', 'relevamientos', 'viaticos', 'calidad'];
+const ROL_NOMBRE = { carga: 'Carga', aprobador: 'Aprobador', admin: 'Admin', solo_escaneo: 'Solo escaneo', supervisor: 'Supervisor', jefe: 'Jefe', consulta: 'Consulta', editor: 'Editor', equipo: 'Equipo' };
 const EXTRA_NOMBRE = { director: 'Director (aprueba lotes de pago)' };
 APPS_TODAS.forEach(a => { a.acceso = ID_ACCESO[a.repo] || null; });
 
@@ -1342,7 +1370,8 @@ const API_APP = {
   asientos: 'https://asientos-api.lucciano-viaticos.workers.dev',
   payway: 'https://payway-api.lucciano-viaticos.workers.dev',
   costos: 'https://costos-api.lucciano-viaticos.workers.dev',
-  relevamientos: 'https://relevamientos-api.lucciano-viaticos.workers.dev'
+  relevamientos: 'https://relevamientos-api.lucciano-viaticos.workers.dev',
+  calidad: 'https://calidad-api.lucciano-viaticos.workers.dev'
 };
 const mesActual = () => new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 7);
 const plata = n => '$ ' + Number(n || 0).toLocaleString('es-AR', { maximumFractionDigits: 0 });
@@ -1398,6 +1427,15 @@ const PENDIENTES = {
     if (!['jefe', 'admin'].includes(rolEn('relevamientos'))) return [];
     const c = await deApp('relevamientos', '/api/informes/contador');
     return [c.sin_ver && { n: c.sin_ver, txt: 'informes de supervisores sin ver', ruta: '#/informes' }];
+  },
+  calidad: async () => {
+    const r = await deApp('calidad', '/api/resumen');
+    const lider = r.rol === 'admin';
+    return [
+      r.vencidas && { n: r.vencidas, txt: 'tareas de calidad vencidas', ruta: lider ? '#/tablero' : '#/hoy', alerta: 1 },
+      r.criticas && { n: r.criticas, txt: 'tareas críticas de calidad abiertas', ruta: lider ? '#/tablero' : '#/hoy', alerta: 1 },
+      r.hoy && { n: r.hoy, txt: 'tareas de calidad que vencen hoy', ruta: lider ? '#/tablero' : '#/hoy' }
+    ];
   },
   viaticos: async () => {
     if (rolEn('viaticos') !== 'admin') return [];
@@ -1472,6 +1510,8 @@ const BUSCADORES = {
     return (await cacheLocales).filter(l => normal(l.name + ' ' + (l.code || '')).includes(q)).slice(0, 4).map(l => ({
       t: l.name, d: l.score != null ? `Último relevamiento: ${Number(l.score).toLocaleString('es-AR', { maximumFractionDigits: 1 })} puntos` : 'Sin relevar este mes', ruta: '#/local/' + l.id }));
   },
+  calidad: async q => ((await deApp('calidad', '/api/tareas?limite=4&q=' + encodeURIComponent(q))).tareas || []).map(t => ({
+    t: t.titulo, d: `${t.puesto || ''} · ${({ pendiente: 'Pendiente', ejecucion: 'En ejecución', revision: 'En revisión', resuelto: 'Resuelta' })[t.estado] || ''}${t.vence ? ' · vence ' + t.vence.split('-').reverse().slice(0, 2).join('/') : ''}`, ruta: '#/tarea/' + t.id })),
   viaticos: async q => {
     if (rolEn('viaticos') !== 'admin') return [];
     return ((await datosViaticos()) || []).filter(g => normal((g.razon_social || '') + ' ' + (g.supervisor || g.nombre || '') + ' ' + (g.cuit || '')).includes(q)).slice(0, 4).map(g => ({
