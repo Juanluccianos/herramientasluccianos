@@ -1305,6 +1305,7 @@ async function volverAApp() {
   const app = irA; irA = null;
   try {
     const { url } = await api('/pase', { metodo: 'POST', datos: { app } });
+    try { const k = 'herr.abiertas.' + yo.usuario.id, l = JSON.parse(localStorage.getItem(k) || '[]'); if (!l.includes(app)) localStorage.setItem(k, JSON.stringify([...l, app])); } catch {}
     location.replace(url);
   } catch (e) {
     mostrarPortal();
@@ -1508,6 +1509,19 @@ async function abrirApp(e, el) {
   if (!a || !a.acceso || !CON_LOGIN_UNICO.includes(a.acceso)) return; // se abre como siempre
   // Se abre al instante: si la app ya tiene su sesión, entra directo; si no, vuelve al portal a buscarla (#ir=)
   e.preventDefault();
+  // La primera vez que esta persona abre la app en este navegador, el portal le consigue la sesión directo
+  // (así no rebota portal → app → portal → app). Las siguientes veces entra al instante.
+  const clave = 'herr.abiertas.' + yo.usuario.id;
+  let abiertas = [];
+  try { abiertas = JSON.parse(localStorage.getItem(clave) || '[]'); } catch {}
+  if (!abiertas.includes(a.acceso)) {
+    try {
+      const { url } = await api('/pase', { metodo: 'POST', datos: { app: a.acceso } });
+      try { localStorage.setItem(clave, JSON.stringify([...abiertas, a.acceso])); } catch {}
+      location.href = url;
+      return;
+    } catch (err) { /* si falla, sigue por el camino de siempre */ }
+  }
   const url = new URL(a.url);
   url.hash = 'portal!' + yo.usuario.id;   // la app confirma que su sesión es de esta misma persona
   location.href = url.toString();   // misma pestaña: cada app tiene su botón para volver a Herramientas
