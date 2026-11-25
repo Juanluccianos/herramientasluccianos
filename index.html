@@ -1687,7 +1687,7 @@ function editorUsuario(u) {
           <h3>Acceso</h3>
           <label class="sw"><span class="tx"><b>Activo</b><small>Si lo desactivás, queda afuera de todas las herramientas al instante.</small></span><input type="checkbox" name="activo" ${u.activo ? 'checked' : ''}><span class="tg"></span></label>
           <div class="grupo" style="margin-top:10px">
-            <button class="fila" type="button" data-adm="link" data-id="${u.id}"><span class="ic">${svg(ICO.mail)}</span><span class="tx"><b>${u.tiene_clave ? 'Mandar link para cambiar la contraseña' : 'Mandar link de activación'}</b><small>Vence en 48 horas y sirve una sola vez</small></span>${svg(ICO.chev, 'i chev')}</button>
+            <button class="fila" type="button" data-adm="link" data-id="${u.id}"><span class="ic">${svg(ICO.mail)}</span><span class="tx"><b>${u.tiene_clave ? 'Mandar link para cambiar la contraseña' : 'Mandar link de activación'}</b><small>Vence en 7 días y sirve una sola vez</small></span>${svg(ICO.chev, 'i chev')}</button>
             <button class="fila" type="button" data-adm="sesiones" data-id="${u.id}"><span class="ic">${svg(ICO.salir)}</span><span class="tx"><b>Cerrar sus sesiones</b><small>Tiene que volver a ingresar en todos sus dispositivos</small></span>${svg(ICO.chev, 'i chev')}</button>
             ${u.tiene_clave ? `<button class="fila peligro" type="button" data-adm="blanquear" data-id="${u.id}"><span class="ic">${svg(ICO.borrar)}</span><span class="tx"><b>Blanquear contraseña</b><small>Queda afuera hasta que elija una nueva</small></span></button>` : ''}
           </div>
