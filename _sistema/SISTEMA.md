@@ -6,7 +6,7 @@
 ## 0. Cómo usar este documento (para Claude)
 - Esto describe cómo está armado TODO el sistema y cómo se trabaja. **Leelo entero antes de proponer o tocar nada.** Lo que dice acá es obligatorio.
 - Antes de cambiar una app, **leé lo publicado en su repo** (GitHub `Juanluccianos`) y, si tocás un Worker, pedí su código actual como .txt.
-- **Este documento se mantiene al día solo con cada entrega:** si tu cambio modifica algo de lo que dice acá (una app nueva, un rol, un Worker, una integración, una regla), actualizalo y mandalo **en el mismo zip** como `herramientasluccianos/_sistema/SISTEMA.md`, sumando una línea al **Registro de cambios** (punto 11). Si no cambia nada de esto, no lo mandes.
+- **Este documento se mantiene al día solo con cada entrega:** si tu cambio modifica algo de lo que dice acá (una app nueva, un rol, un Worker, una integración, una regla), actualizalo y mandalo **en el mismo zip** como `herramientasluccianos/_sistema/SISTEMA.md`, sumando una línea al **Registro de cambios** (punto 12). Si no cambia nada de esto, no lo mandes.
 - La versión vigente es la del repo (`_sistema/SISTEMA.md`). Si la que te pegaron es más vieja, avisá.
 - Ojo: el repo es público. `_sistema` no se ve en la página web, pero se puede leer en GitHub: **nunca** pongas claves, contraseñas ni datos personales en este documento.
 
@@ -263,8 +263,28 @@ for (const f of process.argv.slice(2)) {
 
 ---
 
-## 11. Registro de cambios
+## 11. Multi-país (definido, en construcción)
+Shares habilitó sus APIs para otras sociedades (manual "sociedades-multi-pais.md"): mismo usuario y clave, campo `pais` con la **sigla** de la sociedad; sin `pais` = Argentina (con `cuit_empresa`); afuera de Argentina no se manda CUIT. Siglas: `U`, `U2` (Uruguay) · `ESP`, `ESP2`, `ESP3`, `ESP4` (España) · `ITA`, `ITA2` (Italia) · `USA`, `USA2`, `USA3`, `USA4` · `CL`, `PY`, `MAR`. En Italia y España los impuestos de facturas van como `ritenuta` y `sconto`. Recetas: `/recipes?pais=…`.
+
+**Decisiones:**
+- **Para la gente de Argentina no cambia nada:** solo ven Argentina, sin selector.
+- **Sociedades por persona** (nuevo en el portal → Administrar usuarios). Sin tildar = solo Argentina.
+  - **Blas:** Europa y Uruguay (ESP, ESP2, ESP3, ESP4, ITA, ITA2, U, U2). **No ve nada de Argentina.**
+  - **Belu:** USA (USA, USA2, USA3, USA4). **No ve nada de Argentina.**
+  - **Juan, Ximena, Fran y los socios:** todas.
+- Quien tiene más de una sociedad ve en cada app **"Sociedad: … ▾"**; todo lo que ve y carga es de esa sociedad (listas, tableros, "Para hoy", buscador). Cada dato queda marcado con su sociedad; lo existente queda como Argentina.
+- **Apps multi-país:** Facturas, Asientos y (quizás) Costos. Gastos con tarjeta, Payway, Viáticos, Relevamientos y Calidad: solo Argentina por ahora.
+- **Facturas de otros países llegan a otro mail** (configurar más adelante); mientras tanto se cargan subiendo el PDF.
+- Orden: 1) portal (sociedades por persona + selector común) → 2) Asientos → 3) Facturas → 4) Costos.
+- **Hecho (27/11):** portal → Administrar usuarios → **Sociedades** (tabla `usuario_sociedades` en la base `acceso`; sin filas = solo Argentina; superadmins = todas). `acceso-api` devuelve `sociedades` (lista de siglas) en `/verificar`, `/canjear` y `/yo`, y el catálogo en `/yo` (`sociedades_catalogo`) y `/admin/usuarios`. Las apps lo usan para mostrar el selector (próximo paso: Asientos).
+- Shares preguntó desde dónde llegan las conexiones: los Workers no tienen IP fija (red de Cloudflare); proponer identificar por usuario de API o encabezado secreto.
+
+---
+
+## 12. Registro de cambios
 (Una línea por cambio que afecte a este documento, la más nueva arriba.)
+- 2026-11-27 · Sociedades por persona en el portal y en acceso-api (multi-país, paso 1).
+- 2026-11-27 · Definido el plan multi-país (punto 11).
 - 2026-11-27 · Redibujo suave de las pantallas rápidas en todas las apps; en el portal, la ventana de usuarios ya no se cierra al seleccionar texto ni con Escape mientras se busca.
 - 2026-11-27 · Robot de entregas: un solo zip a `herramientasluccianos`, Workers cerrados con candado, copia en `_sistema/workers`. Este documento pasa a vivir en `_sistema/SISTEMA.md`.
 - 2026-11-26 · Las 8 apps atan a cada persona a su número del portal (`portal_id`): un cambio de mail ya no crea fichas nuevas. Relevamientos trae las personas del portal (`ACCESO_DB`).

@@ -602,6 +602,19 @@ body[data-estado="portal"] .res.on { display: block; }
 .res-item small { color: var(--muted); font-size: 12.5px; }
 .res-nada { color: var(--muted); font-size: 14px; padding: 4px 2px; }
 @media (prefers-reduced-motion: reduce) { .pend-item, .pend-cargando { animation: none; } }
+
+/* Sociedades (multi-país) */
+.soc-ayuda { margin: -2px 0 10px; color: var(--ink-soft, #6c6a62); font-size: 13.5px; }
+.soc-rapido { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; }
+.soc-rapido .btn { width: auto; margin: 0; }
+.soc-lista { display: grid; gap: 10px; }
+.soc-grupo { border: 1px solid var(--line, #e5e3de); border-radius: 12px; padding: 10px 12px; }
+.soc-reg { display: block; font-size: 11.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-soft, #6c6a62); margin-bottom: 6px; }
+.soc-op { display: flex; align-items: center; gap: 10px; padding: 5px 0; cursor: pointer; }
+.soc-op input { width: 18px; height: 18px; accent-color: #4f7a28; }
+.soc-op b { display: block; font-size: 14px; font-weight: 600; }
+.soc-op small { font-size: 12px; color: var(--ink-soft, #6c6a62); }
+.soc-tag { display: inline-flex; align-items: center; gap: 4px; color: #2f4a17 !important; font-weight: 600; }
 </style>
 </head>
 <body class="intro" data-estado="cargando">
@@ -1637,7 +1650,7 @@ document.addEventListener('cancel', e => {
 }, true);
 
 /* ---------- Administrar usuarios (superadmin) ---------- */
-const adm = { usuarios: [], apps: [], q: '', filtro: 'todos' };
+const adm = { usuarios: [], apps: [], sociedades: [], q: '', filtro: 'todos' };
 
 $('#ir-admin').addEventListener('click', async () => {
   $('#dlg-cuenta').close();
@@ -1649,7 +1662,7 @@ $('#ir-admin').addEventListener('click', async () => {
 async function cargarUsuarios() {
   try {
     const r = await api('/admin/usuarios');
-    adm.usuarios = r.usuarios; adm.apps = r.apps;
+    adm.usuarios = r.usuarios; adm.apps = r.apps; adm.sociedades = r.sociedades || [];
     listaUsuarios();
   } catch (e) { $('#adm').innerHTML = `<div class="adm-head"><h2>Usuarios</h2><p class="msg">${esc(e.message)}</p></div>`; }
 }
@@ -1674,6 +1687,20 @@ function appsDe(u) {
     const ext = p.extras.length ? ' + ' + p.extras.map(x => EXTRA_NOMBRE[x] || x).join(', ') : '';
     return `<span class="ap" style="--app:${a ? a.color : '#5f5d55'}" title="${esc((a ? a.nombre : p.app) + ' · ' + (ROL_NOMBRE[p.rol] || p.rol) + ext)}">${svg(iconoApp(p.app))}</span>`;
   }).join('') + (u.permisos.length > max ? `<span class="mas">+${u.permisos.length - max}</span>` : '');
+}
+
+// Multi-país: quien no es solo de Argentina muestra sus regiones (ej. "España · Italia · Uruguay")
+function etiquetaSociedades(u) {
+  if (u.superadmin || !u.sociedades || (u.sociedades.length === 1 && u.sociedades[0] === 'ARGENTINA')) return '';
+  const reg = [...new Set(adm.sociedades.filter(x => u.sociedades.includes(x.sigla)).map(x => x.region))];
+  return `<small class="soc-tag">🌎 ${esc(reg.join(' · '))}</small>`;
+}
+function bloqueSociedades(u) {
+  const mias = u.sociedades && u.sociedades.length ? u.sociedades : ['ARGENTINA'];
+  const regiones = [...new Set(adm.sociedades.map(x => x.region))];
+  return regiones.map(r => `<div class="soc-grupo"><span class="soc-reg">${esc(r)}</span>
+    ${adm.sociedades.filter(x => x.region === r).map(x => `<label class="soc-op"><input type="checkbox" name="soc" value="${x.sigla}" ${mias.includes(x.sigla) ? 'checked' : ''}><span><b>${esc(x.nombre)}</b><small>${x.sigla === 'ARGENTINA' ? 'Todas las empresas de Argentina' : x.sigla}</small></span></label>`).join('')}
+  </div>`).join('');
 }
 
 function listaUsuarios() {
@@ -1701,7 +1728,7 @@ function listaUsuarios() {
       ${lista.map(u => `
       <button class="u-row ${u.activo ? '' : 'off'}" type="button" data-adm="editar" data-id="${u.id}">
         ${avatar(u.nombre, u.activo ? '' : 'off')}
-        <span class="nm"><b>${esc(u.nombre)}</b><small>${esc(u.email)}</small><small class="est-m">${estadoU(u) === 'ok' ? (u.ultimo_acceso ? 'Último ingreso: ' + cuandoFue(u.ultimo_acceso).toLowerCase() : 'Nunca entró') : estadoU(u) === 'sin' ? 'Sin activar' : 'Desactivado'}</small></span>
+        <span class="nm"><b>${esc(u.nombre)}</b><small>${esc(u.email)}</small>${etiquetaSociedades(u)}<small class="est-m">${estadoU(u) === 'ok' ? (u.ultimo_acceso ? 'Último ingreso: ' + cuandoFue(u.ultimo_acceso).toLowerCase() : 'Nunca entró') : estadoU(u) === 'sin' ? 'Sin activar' : 'Desactivado'}</small></span>
         <span class="u-apps">${appsDe(u)}</span>
         <span class="u-est">${estadoDe(u)}</span>
         ${svg(ICO.chev, 'i chev')}
@@ -1748,6 +1775,12 @@ function editorUsuario(u) {
           <label class="sw"><span class="tx"><b>Superadmin</b><small>Entra a todas las herramientas como admin y administra usuarios.</small></span><input type="checkbox" name="superadmin" ${u.superadmin ? 'checked' : ''}><span class="tg"></span></label>
           <div id="ed-apps" style="margin-top:10px" ${u.superadmin ? 'hidden' : ''}><div class="permisos">${filas}</div></div>
         </section>
+        <section class="sec" id="ed-soc" ${u.superadmin ? 'hidden' : ''}>
+          <h3>Sociedades</h3>
+          <p class="soc-ayuda">Qué sociedades ve en Facturas, Asientos y Costos. Si tiene más de una, en cada app elige con cuál trabajar. Lo normal es <b>solo Argentina</b>.</p>
+          <div class="soc-rapido"><button class="btn sec chico" type="button" data-soc="ar">Solo Argentina</button><button class="btn sec chico" type="button" data-soc="todas">Todas</button></div>
+          <div class="soc-lista">${bloqueSociedades(u)}</div>
+        </section>
         ${nuevo ? '' : `
         <section class="sec">
           <h3>Acceso</h3>
@@ -1768,7 +1801,11 @@ function editorUsuario(u) {
     </form>`;
   const f = $('#f-usuario');
   f.dataset.id = nuevo ? '' : u.id;
-  f.superadmin.addEventListener('change', () => { $('#ed-apps').hidden = f.superadmin.checked; });
+  f.superadmin.addEventListener('change', () => { $('#ed-apps').hidden = f.superadmin.checked; $('#ed-soc').hidden = f.superadmin.checked; });
+  $('#ed-soc').addEventListener('click', e => {
+    const b = e.target.closest('[data-soc]'); if (!b) return;
+    f.querySelectorAll('input[name=soc]').forEach(x => { x.checked = b.dataset.soc === 'todas' || x.value === 'ARGENTINA'; });
+  });
   // La tarjeta de cada app se pinta cuando tiene acceso
   f.addEventListener('change', e => {
     const perm = e.target.closest('.perm');
@@ -1803,8 +1840,10 @@ $('#adm').addEventListener('submit', e => {
     const datos = {
       nombre: f.nombre.value, email: f.email.value,
       superadmin: f.superadmin.checked,
-      permisos: f.superadmin.checked ? [] : leerPermisos()
+      permisos: f.superadmin.checked ? [] : leerPermisos(),
+      sociedades: f.superadmin.checked ? undefined : [...f.querySelectorAll('input[name=soc]:checked')].map(x => x.value)
     };
+    if (datos.sociedades && !datos.sociedades.length) throw new Error('Elegí al menos una sociedad (lo normal es Argentina).');
     if (id) {
       datos.activo = f.activo.checked;
       await api('/admin/usuarios/' + id, { metodo: 'PUT', datos });
@@ -1820,7 +1859,7 @@ $('#adm').addEventListener('submit', e => {
 
 async function refrescar(id) {
   const r = await api('/admin/usuarios');
-  adm.usuarios = r.usuarios; adm.apps = r.apps;
+  adm.usuarios = r.usuarios; adm.apps = r.apps; adm.sociedades = r.sociedades || [];
   const u = adm.usuarios.find(x => x.id === id);
   if (u) editorUsuario(u);
 }
