@@ -1,0 +1,133 @@
+# Robot de Herramientas: cuando se sube una entrega (.zip) a la raíz de este repo, la publica sola:
+# portal, apps (cada una a su repo) y Workers (abiertos con LLAVE_ABRIR y publicados en Cloudflare).
+name: Robot de Herramientas
+on:
+  push:
+    branches: [main]
+    paths: ['*.zip']
+  workflow_dispatch:
+concurrency:
+  group: robot
+  cancel-in-progress: false
+permissions:
+  contents: write
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_REPOS_TOKEN }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Publicar la entrega
+        env:
+          LLAVE_ABRIR: ${{ secrets.LLAVE_ABRIR }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          GH_REPOS_TOKEN: ${{ secrets.GH_REPOS_TOKEN }}
+          CF_CUENTA: 980faff977ca948f4bb9ba6708d24655
+        run: |
+          cat > /tmp/publicar.mjs <<'ROBOT'
+          // Robot de Herramientas: toma la entrega (un .zip subido a la raíz de herramientasluccianos), abre los Workers
+          // cerrados con candado, actualiza cada repo de app y publica los Workers en Cloudflare. Deja un resumen.
+          import { execSync } from 'node:child_process';
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import crypto from 'node:crypto';
+
+          const RAIZ = process.cwd();
+          const CUENTA = process.env.CF_CUENTA;
+          const SECO = process.env.ROBOT_PRUEBA === '1';          // prueba local: no publica nada
+          const sh = (c, o = {}) => execSync(c, { stdio: 'pipe', encoding: 'utf8', ...o });
+          const resumen = [];
+          const anotar = (que, ok, detalle = '') => { resumen.push({ que, ok, detalle }); console.log(`${ok ? '✅' : '❌'} ${que} ${detalle}`); };
+
+          const zips = fs.readdirSync(RAIZ).filter(f => /\.zip$/i.test(f));
+          if (!zips.length) { console.log('No hay entrega para publicar.'); process.exit(0); }
+
+          function abrir(cerrado) {
+            const c = JSON.parse(cerrado);
+            const llave = crypto.privateDecrypt({ key: process.env.LLAVE_ABRIR, padding: crypto.constants.RSA_PKCS1_OAEP_PADDING, oaepHash: 'sha256' }, Buffer.from(c.k, 'base64'));
+            const d = crypto.createDecipheriv('aes-256-gcm', llave, Buffer.from(c.iv, 'base64'));
+            d.setAuthTag(Buffer.from(c.tag, 'base64'));
+            return Buffer.concat([d.update(Buffer.from(c.data, 'base64')), d.final()]);
+          }
+          function copiar(desde, hasta) {
+            for (const e of fs.readdirSync(desde, { withFileTypes: true })) {
+              const a = path.join(desde, e.name), b = path.join(hasta, e.name);
+              if (e.isDirectory()) { fs.mkdirSync(b, { recursive: true }); copiar(a, b); } else fs.copyFileSync(a, b);
+            }
+          }
+          async function publicarWorker(nombre, codigo) {
+            if (SECO) return 'prueba';
+            const fd = new FormData();
+            fd.append('metadata', new Blob([JSON.stringify({ main_module: 'worker.js' })], { type: 'application/json' }));
+            fd.append('worker.js', new Blob([codigo], { type: 'application/javascript+module' }), 'worker.js');
+            const r = await fetch(`https://api.cloudflare.com/client/v4/accounts/${CUENTA}/workers/scripts/${nombre}/content`, {
+              method: 'PUT', headers: { Authorization: `Bearer ${process.env.CLOUDFLARE_API_TOKEN}` }, body: fd
+            });
+            const j = await r.json().catch(() => ({}));
+            if (!r.ok || !j.success) throw new Error((j.errors || []).map(e => e.message).join('; ') || `HTTP ${r.status}`);
+            return 'publicado';
+          }
+
+          const t0 = Date.now();
+          for (const zip of zips) {
+            const dir = fs.mkdtempSync('/tmp/entrega-');
+            sh(`unzip -q -o "${path.join(RAIZ, zip)}" -d "${dir}"`);
+            const tareas = [];
+            for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+              if (!e.isDirectory() || e.name.startsWith('__MACOSX')) continue;
+              const carpeta = path.join(dir, e.name);
+              if (e.name === 'workers') {
+                // Workers: vienen cerrados (.cerrado). Se guardan así en _sistema/workers y se publican abiertos.
+                fs.mkdirSync(path.join(RAIZ, '_sistema/workers'), { recursive: true });
+                for (const f of fs.readdirSync(carpeta).filter(f => f.endsWith('.js.cerrado'))) {
+                  const nombre = f.replace(/\.js\.cerrado$/, '');
+                  const cerrado = fs.readFileSync(path.join(carpeta, f), 'utf8');
+                  fs.copyFileSync(path.join(carpeta, f), path.join(RAIZ, '_sistema/workers', f));
+                  tareas.push((async () => {
+                    try { const codigo = abrir(cerrado); await publicarWorker(nombre, codigo); anotar(`Worker ${nombre}`, true); }
+                    catch (err) { anotar(`Worker ${nombre}`, false, err.message); }
+                  })());
+                }
+              } else if (e.name === 'herramientasluccianos') {
+                copiar(carpeta, RAIZ); anotar('Portal (herramientasluccianos)', true);
+              } else {
+                // App: se copia a su repo y se publica (GitHub Pages la actualiza sola)
+                tareas.push((async () => {
+                  const repo = e.name, tmp = fs.mkdtempSync('/tmp/repo-');
+                  try {
+                    if (SECO) { anotar(`App ${repo}`, true, '(prueba)'); return; }
+                    sh(`git clone -q --depth 1 "https://x-access-token:${process.env.GH_REPOS_TOKEN}@github.com/Juanluccianos/${repo}.git" "${tmp}"`);
+                    copiar(carpeta, tmp);
+                    sh('git add -A', { cwd: tmp });
+                    if (!sh('git status --porcelain', { cwd: tmp }).trim()) { anotar(`App ${repo}`, true, 'sin cambios'); return; }
+                    sh(`git -c user.name="Robot Herramientas" -c user.email="robot@luccianos.com.ar" commit -q -m "Robot: ${zip}"`, { cwd: tmp });
+                    sh('git push -q', { cwd: tmp });
+                    anotar(`App ${repo}`, true);
+                  } catch (err) { anotar(`App ${repo}`, false, String(err.stderr || err.message).replace(/x-access-token:[^@]+@/g, '***@').slice(0, 300)); }
+                })());
+              }
+            }
+            await Promise.all(tareas);
+            fs.rmSync(path.join(RAIZ, zip));
+          }
+          const seg = Math.round((Date.now() - t0) / 1000);
+          const md = [`## Robot de Herramientas — ${resumen.every(r => r.ok) ? '✅ Todo publicado' : '❌ Hubo errores'} (${seg} s)`, '', '| | Qué | Detalle |', '|---|---|---|',
+            ...resumen.map(r => `| ${r.ok ? '✅' : '❌'} | ${r.que} | ${r.detalle.replace(/\|/g, '/')} |`)].join('\n');
+          if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, md + '\n');
+          console.log(md);
+          if (resumen.some(r => !r.ok)) process.exitCode = 1;
+
+          ROBOT
+          node /tmp/publicar.mjs
+      - name: Guardar el resultado en este repo
+        if: always()
+        run: |
+          git config user.name "Robot Herramientas"
+          git config user.email "robot@luccianos.com.ar"
+          git add -A
+          git diff --cached --quiet || (git commit -q -m "Robot: entrega publicada" && git push -q)
