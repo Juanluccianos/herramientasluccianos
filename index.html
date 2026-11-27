@@ -1619,10 +1619,22 @@ $('#salir').addEventListener('click', async () => {
   cerrarLocal();
 });
 
+// Clic afuera cierra la ventana SOLO si el clic empezó y terminó afuera: si estás seleccionando texto en un
+// buscador y soltás el mouse fuera de la ventana, no se cierra.
+let mousedownEn = null;
+document.addEventListener('mousedown', e => { mousedownEn = e.target; });
 document.addEventListener('click', e => {
   if (e.target.closest('[data-cerrar]')) e.target.closest('dialog').close();
-  if (e.target.matches('dialog')) e.target.close(); // clic afuera
+  if (e.target.matches('dialog') && mousedownEn === e.target) e.target.close(); // clic afuera
 });
+// Escape dentro de un buscador o un campo: primero borra lo escrito, no cierra la ventana
+document.addEventListener('cancel', e => {
+  const a = document.activeElement;
+  if (e.target.matches && e.target.matches('dialog') && a && e.target.contains(a) && a.matches('input, textarea')) {
+    e.preventDefault();
+    if (a.value) { a.value = ''; a.dispatchEvent(new Event('input', { bubbles: true })); } else a.blur();
+  }
+}, true);
 
 /* ---------- Administrar usuarios (superadmin) ---------- */
 const adm = { usuarios: [], apps: [], q: '', filtro: 'todos' };

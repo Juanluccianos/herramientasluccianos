@@ -118,7 +118,8 @@ Repos en **https://github.com/Juanluccianos/** · Workers en `https://<worker>.l
 
 ## 6. Comportamientos comunes — obligatorios
 - **Aviso de versión nueva:** píldora negra abajo "Hay una versión nueva de <App>" + botón pistacho "Actualizar" (bloque `avisoVersionNueva`; modo `app.js?v=` como Facturas, o `sw.js` + `BUILD` como Relevamientos).
-- **Pantallas rápidas:** Inicio, tableros y Salud muestran al instante lo último guardado (por persona) y se actualizan de fondo. **Después de cualquier cambio (POST/PUT/DELETE) se borra lo guardado**, así los contadores y tableros se actualizan en el acto. Si el Worker guarda el tablero en su base (como Facturas y Efectivo, `kv.tablero_cache`), también se borra al haber un cambio.
+- **Pantallas rápidas:** Inicio, tableros y Salud muestran al instante lo último guardado (por persona) y se actualizan de fondo. **Después de cualquier cambio (POST/PUT/DELETE) se borra lo guardado**, así los contadores y tableros se actualizan en el acto. Si el Worker guarda el tablero en su base (como Facturas y Efectivo, `kv.tablero_cache`), también se borra al haber un cambio. Cuando llegan datos nuevos de fondo, la pantalla se redibuja **suave** (`redibujoSuave`: sin animaciones, en el mismo lugar del scroll) y **espera** si la persona está escribiendo o tiene una ventana abierta.
+- **Ventanas:** un clic afuera solo cierra si empezó afuera (no al soltar el mouse después de seleccionar texto); Escape en un buscador primero borra lo escrito.
 - **Tablas largas:** con alto máximo se desplazan adentro de su recuadro, encabezado fijo.
 - **Sin usuarios propios:** ninguna pestaña "Usuarios", "Cambiar clave" ni "Cerrar sesión".
 - **Configuración → Salud** (si la app usa servicios externos: Shares, Drive, IA): estado de cada conexión, igual que en las otras.
@@ -264,6 +265,7 @@ for (const f of process.argv.slice(2)) {
 
 ## 11. Registro de cambios
 (Una línea por cambio que afecte a este documento, la más nueva arriba.)
+- 2026-11-27 · Redibujo suave de las pantallas rápidas en todas las apps; en el portal, la ventana de usuarios ya no se cierra al seleccionar texto ni con Escape mientras se busca.
 - 2026-11-27 · Robot de entregas: un solo zip a `herramientasluccianos`, Workers cerrados con candado, copia en `_sistema/workers`. Este documento pasa a vivir en `_sistema/SISTEMA.md`.
 - 2026-11-26 · Las 8 apps atan a cada persona a su número del portal (`portal_id`): un cambio de mail ya no crea fichas nuevas. Relevamientos trae las personas del portal (`ACCESO_DB`).
 - 2026-11-26 · Aviso de versión nueva, pantallas rápidas y tablas largas iguales en todas. Se sacaron las pestañas de usuarios de las apps. Viáticos con Inicio y el marco común.
