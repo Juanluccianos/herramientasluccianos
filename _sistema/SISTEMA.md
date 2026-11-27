@@ -278,12 +278,20 @@ Shares habilitó sus APIs para otras sociedades (manual "sociedades-multi-pais.m
 - Orden: 1) portal (sociedades por persona + selector común) → 2) Asientos → 3) Facturas → 4) Costos.
 - **Hecho (27/11):** portal → Administrar usuarios → **Sociedades** (tabla `usuario_sociedades` en la base `acceso`; sin filas = solo Argentina; superadmins = todas). `acceso-api` devuelve `sociedades` (lista de siglas) en `/verificar`, `/canjear` y `/yo`, y el catálogo en `/yo` (`sociedades_catalogo`) y `/admin/usuarios`. Las apps lo usan para mostrar solo lo de cada persona.
 - **Hecho (27/11) — Asientos:** las sociedades de otros países se cargan en Configuración → Empresas con **"Agregar sociedad de otro país"**: su clave es la **sigla** (columna `cuit` = sigla, columna nueva `pais`; lo existente quedó `ARGENTINA`). Cada persona ve y toca solo las empresas de sus sociedades (listas, tablero, lotes, asientos, plan de cuentas, envío). A Shares: afuera de Argentina va `pais` y sin `cuit_empresa`; el plan de cuentas se trae con `/supplier-invoices/concepts?pais=`. Quien no tiene Argentina no ve "Traer de la app de facturas" ni "Nueva empresa a mano". En Asientos no hace falta un selector aparte: el desplegable de Empresa ya separa por sociedad.
+- **Facturas — lo que se sabe de Shares para otros países** (probado con ITA el 27/11, desde Facturas → Configuración → Salud → "Sociedades de otros países (prueba)"):
+  - `GET /supplier-invoices/concepts?pais=ITA` funciona igual que en Argentina (codigo_concepto + denominacion). ESP y USA también.
+  - **Proveedores de afuera se identifican por su número interno de Shares (`id`)**. Shares valida "CUIT de 11 dígitos" con el control argentino, así que NO acepta buscar por partita IVA/NIF/EIN. `GET /supplier-invoices/provider` pide `id` o `cuit` como parámetro (no lista todos).
+  - `POST /supplier-invoices/recent` con `{ pais, id_proveedor, estado, limit }` funciona (sirve para duplicados). `POST /supplier-invoices/pending` con `{ pais, pagina, limit }` funciona.
+  - Formato de una factura de Italia en Shares: tipo `F`, punto de venta y número como en Argentina, `cuit_empresa` vacío, `proveedor { id, cuit: partita IVA, razon_social }`, items `{ id_concepto_fc, codigo_concepto, importe, alicuota: 22, iva }`, y **el IVA del 22% va en `neto_21` / `iva_21`** (el casillero de la alícuota general). `ritenuta` y `sconto` existen en totales.
+  - **Falta confirmar con Shares:** en qué casillero van las otras alícuotas de afuera (Italia 10% / 4%, España 10% / 4%) y si hay forma de buscar proveedores por nombre o listar los de una sociedad.
+  - Plan para Facturas de afuera: subir PDF eligiendo la sociedad → lectura con IA para facturas extranjeras → sin ARCA → proveedor por número de Shares (la app recuerda partita IVA ↔ número) → duplicados por `id_proveedor` → envío con `metadata.pais` y ritenuta/sconto en ITA/ESP → cada persona ve solo sus sociedades (listas, tablero, "Para hoy", buscador).
 - Shares preguntó desde dónde llegan las conexiones: los Workers no tienen IP fija (red de Cloudflare); proponer identificar por usuario de API o encabezado secreto.
 
 ---
 
 ## 12. Registro de cambios
 (Una línea por cambio que afecte a este documento, la más nueva arriba.)
+- 2026-11-27 · Facturas: prueba por país en Salud y lo aprendido de Shares para otros países (punto 11).
 - 2026-11-27 · Asientos multi-país (paso 2).
 - 2026-11-27 · Sociedades por persona en el portal y en acceso-api (multi-país, paso 1).
 - 2026-11-27 · Definido el plan multi-país (punto 11).
