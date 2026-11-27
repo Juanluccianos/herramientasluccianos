@@ -276,13 +276,15 @@ Shares habilitó sus APIs para otras sociedades (manual "sociedades-multi-pais.m
 - **Apps multi-país:** Facturas, Asientos y (quizás) Costos. Gastos con tarjeta, Payway, Viáticos, Relevamientos y Calidad: solo Argentina por ahora.
 - **Facturas de otros países llegan a otro mail** (configurar más adelante); mientras tanto se cargan subiendo el PDF.
 - Orden: 1) portal (sociedades por persona + selector común) → 2) Asientos → 3) Facturas → 4) Costos.
-- **Hecho (27/11):** portal → Administrar usuarios → **Sociedades** (tabla `usuario_sociedades` en la base `acceso`; sin filas = solo Argentina; superadmins = todas). `acceso-api` devuelve `sociedades` (lista de siglas) en `/verificar`, `/canjear` y `/yo`, y el catálogo en `/yo` (`sociedades_catalogo`) y `/admin/usuarios`. Las apps lo usan para mostrar el selector (próximo paso: Asientos).
+- **Hecho (27/11):** portal → Administrar usuarios → **Sociedades** (tabla `usuario_sociedades` en la base `acceso`; sin filas = solo Argentina; superadmins = todas). `acceso-api` devuelve `sociedades` (lista de siglas) en `/verificar`, `/canjear` y `/yo`, y el catálogo en `/yo` (`sociedades_catalogo`) y `/admin/usuarios`. Las apps lo usan para mostrar solo lo de cada persona.
+- **Hecho (27/11) — Asientos:** las sociedades de otros países se cargan en Configuración → Empresas con **"Agregar sociedad de otro país"**: su clave es la **sigla** (columna `cuit` = sigla, columna nueva `pais`; lo existente quedó `ARGENTINA`). Cada persona ve y toca solo las empresas de sus sociedades (listas, tablero, lotes, asientos, plan de cuentas, envío). A Shares: afuera de Argentina va `pais` y sin `cuit_empresa`; el plan de cuentas se trae con `/supplier-invoices/concepts?pais=`. Quien no tiene Argentina no ve "Traer de la app de facturas" ni "Nueva empresa a mano". En Asientos no hace falta un selector aparte: el desplegable de Empresa ya separa por sociedad.
 - Shares preguntó desde dónde llegan las conexiones: los Workers no tienen IP fija (red de Cloudflare); proponer identificar por usuario de API o encabezado secreto.
 
 ---
 
 ## 12. Registro de cambios
 (Una línea por cambio que afecte a este documento, la más nueva arriba.)
+- 2026-11-27 · Asientos multi-país (paso 2).
 - 2026-11-27 · Sociedades por persona en el portal y en acceso-api (multi-país, paso 1).
 - 2026-11-27 · Definido el plan multi-país (punto 11).
 - 2026-11-27 · Redibujo suave de las pantallas rápidas en todas las apps; en el portal, la ventana de usuarios ya no se cierra al seleccionar texto ni con Escape mientras se busca.
